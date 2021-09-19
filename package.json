@@ -1,0 +1,33 @@
+{
+  "name": "appeals",
+  "version": "0.0.1",
+  "description": "Appeals para el servidor de LA CABRA",
+  "main": "dist/main.js",
+  "scripts": {
+    "start": "tsc && echo Done && node build/main.js",
+    "build": "tsc && echo Bot complilado correctamente",
+    "dev": "ts-node-dev --respawn --transpile-only --poll main.ts",
+    "test": "eslint ."
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/holasoyender/Appeals.git"
+  },
+  "author": "holasoyender",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/holasoyender/Appeals/issues"
+  },
+  "homepage": "https://github.com/holasoyender/Appeals#readme",
+  "dependencies": {
+    "dotenv": "^10.0.0",
+    "express": "^4.17.1",
+    "mongoose": "^6.0.6",
+    "passport": "^0.4.1",
+    "passport-discord": "^0.1.4"
+  },
+  "devDependencies": {
+    "@types/express": "^4.17.13",
+    "@types/passport": "^1.0.7"
+  }
+}
