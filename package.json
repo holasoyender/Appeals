@@ -20,14 +20,21 @@
   },
   "homepage": "https://github.com/holasoyender/Appeals#readme",
   "dependencies": {
+    "connect-mongo": "^4.6.0",
+    "discord.js": "^13.1.0",
     "dotenv": "^10.0.0",
     "express": "^4.17.1",
+    "express-session": "^1.17.2",
     "mongoose": "^6.0.6",
     "passport": "^0.4.1",
     "passport-discord": "^0.1.4"
   },
   "devDependencies": {
     "@types/express": "^4.17.13",
-    "@types/passport": "^1.0.7"
+    "@types/express-session": "^1.17.4",
+    "@types/mongoose": "^5.11.97",
+    "@types/passport": "^1.0.7",
+    "@types/passport-discord": "^0.1.5",
+    "ts-node-dev": "^1.1.8"
   }
 }
