@@ -26,7 +26,7 @@ La ID de la app de Discord para el sistema oauth.
 ### CLIENT_SECRET (Secret del Cliente)
 
 El código secreto de la app de Discord para el sistema oauth.
-[fotico]
+[fotico](https://i.imgur.com/SvTpAl3.png)
 
 ### APP_SECRET (Secret de la APP)
 
