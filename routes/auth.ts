@@ -2,7 +2,7 @@ import { Router } from "express";
 const router = Router();
 import * as passport from "passport";
 import * as path from "path";
-import { checkBans } from "../main";
+import {checkBans, sendAppealEmbed} from "../bot";
 import { getFormHTML } from "./views/form";
 import Appeal from "../database/Appeal";
 import * as mongoose from "mongoose";
@@ -75,6 +75,7 @@ router.get("/form/get", async (req, res) => {
         _id: new mongoose.Types.ObjectId(),
 
         AppealID,
+        MessageID: "none",
         UserID: user.ID,
         User: {
             ID: user.ID,
@@ -89,10 +90,14 @@ router.get("/form/get", async (req, res) => {
     })
 
     newAppeal.save()
-        .then(doc => console.log(doc))
+        .then(async doc => {
+            let appeal = await sendAppealEmbed(user, doc);
+            if (!appeal) {
+                console.log("Error: Ha ocurrido un error intentado mandar el embed de apelación al canal\nPor favor, comprueba la configuración")
+                return res.sendFile(path.join(__dirname, "/views/unknownError.html"))
+            }
+        })
         .catch(e => { console.log(e); return res.sendFile(path.join(__dirname, "/views/unknownError.html"))})
-    //TODO: LOS EMBEDS Y LOS BOTONES ETC..
-    //TODO: BLOQUEAR USUARIOS O ALGO ASI
 
     return res.sendFile(path.join(__dirname, "/views/success.html"))
 })
