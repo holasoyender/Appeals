@@ -11,15 +11,12 @@ router.get("/discord", passport.authenticate("discord"));
 
 router.get("/discord/redirect", passport.authenticate("discord"), async (req, res) => {
     let user: any = await req.user;
-    if (user.Guilds.find(g => g.id === process.env.GUILD_ID)) {
-        return res.redirect(req.baseUrl + '/error');
-    } else {
-        let isBanned = await checkBans(user.ID)
-        if (!isBanned) return res.redirect(req.baseUrl + '/error');
+    let isBanned = await checkBans(user.ID)
+    if (!isBanned) return res.redirect(req.baseUrl + '/error');
+    if (process.env.USUARIOS_BLOQUEADOS.split(", ").includes(user.ID)) return res.redirect(req.baseUrl + '/blocked');
 
-        if(process.env.USUARIOS_BLOQUEADOS.split(", ").includes(user.ID)) return res.redirect(req.baseUrl + '/blocked');
-        res.redirect(req.baseUrl + '/form');
-    }
+    res.redirect(req.baseUrl + '/form');
+
 })
 
 router.get("/error", async (req, res) => {
@@ -31,33 +28,27 @@ router.get("/blocked", async (req, res) => {
 })
 
 router.get("/form", async (req, res) => {
-    if(!req.user) return res.redirect(req.baseUrl + '/discord/redirect');
+    if (!req.user) return res.redirect(req.baseUrl + '/discord/redirect');
 
     let user: any = await req.user;
-    if (user.Guilds.find(g => g.id === process.env.GUILD_ID)) {
-        return res.sendFile(path.join(__dirname, "/views/error.html"))
-    } else {
-        let isBanned = await checkBans(user.ID)
-        if (!isBanned) return res.sendFile(path.join(__dirname, "/views/error.html"))
+    let isBanned = await checkBans(user.ID)
+    if (!isBanned) return res.sendFile(path.join(__dirname, "/views/error.html"))
 
     let exist = await Appeal.findOne({
         UserID: user.ID,
         Unbanned: false
     })
 
-    if(exist) return res.sendFile(path.join(__dirname, "/views/doubleForm.html"))
-    if(process.env.USUARIOS_BLOQUEADOS.split(", ").includes(user.ID)) return res.redirect(req.baseUrl + '/blocked');
+    if (exist) return res.sendFile(path.join(__dirname, "/views/doubleForm.html"))
+    if (process.env.USUARIOS_BLOQUEADOS.split(", ").includes(user.ID)) return res.redirect(req.baseUrl + '/blocked');
 
     res.append("Content-Type", "text/html").send(getFormHTML(req.user))
-    }
 })
 
 router.get("/form/get", async (req, res) => {
 
     let user:any = req.user;
     if(!req.user) return res.redirect(req.baseUrl + '/discord/redirect');
-
-    if (user.Guilds.find(g => g.id === process.env.GUILD_ID)) return res.sendFile(path.join(__dirname, "/views/error.html"))
 
     let isBanned = await checkBans(user.ID)
     if (!isBanned) return res.sendFile(path.join(__dirname, "/views/error.html"))
