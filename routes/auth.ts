@@ -3,7 +3,7 @@ const router = Router();
 import * as passport from "passport";
 import * as path from "path";
 import { checkBans } from "../main";
-import { getFormHTML } from "../view/form";
+import { getFormHTML } from "./views/form";
 import Appeal from "../database/Appeal";
 import * as mongoose from "mongoose";
 
@@ -12,24 +12,47 @@ router.get("/discord", passport.authenticate("discord"));
 router.get("/discord/redirect", passport.authenticate("discord"), async (req, res) => {
     let user: any = await req.user;
     if (user.Guilds.find(g => g.id === process.env.GUILD_ID)) {
-        res.sendFile(path.join(__dirname, "/error.html"))
+        return res.sendFile(path.join(__dirname, "/views/error.html"))
     } else {
         let isBanned = await checkBans(user.ID)
-        if (!isBanned) return res.sendFile(path.join(__dirname, "/error.html"))
+        if (!isBanned) return res.sendFile(path.join(__dirname, "/views/error.html"))
 
         res.redirect(req.baseUrl + '/form');
     }
 })
+//TODO Arreglar el error de invalid code
 
-router.get("/form", (req, res) => {
-    if(!req.user) return res.redirect(req.baseUrl + '/unknown');
+router.get("/form", async (req, res) => {
+    if(!req.user) return res.redirect(req.baseUrl + '/discord/redirect');
+
+    let user: any = await req.user;
+    if (user.Guilds.find(g => g.id === process.env.GUILD_ID)) {
+        return res.sendFile(path.join(__dirname, "/views/error.html"))
+    } else {
+        let isBanned = await checkBans(user.ID)
+        if (!isBanned) return res.sendFile(path.join(__dirname, "/views/error.html"))
+
+    let exist = await Appeal.findOne({
+        UserID: user.ID,
+        Unbanned: false
+    })
+
+    if(exist) return res.sendFile(path.join(__dirname, "/views/doubleForm.html"))
+
     res.append("Content-Type", "text/html").send(getFormHTML(req.user))
+    }
 })
 
 router.get("/form/get", async (req, res) => {
 
     let user:any = req.user;
-    if(!req.user) return res.redirect(req.baseUrl + '/unknown');
+    if(!req.user) return res.redirect(req.baseUrl + '/discord/redirect');
+
+    if (user.Guilds.find(g => g.id === process.env.GUILD_ID)) return res.sendFile(path.join(__dirname, "/views/error.html"))
+
+    let isBanned = await checkBans(user.ID)
+    if (!isBanned) return res.sendFile(path.join(__dirname, "/views/error.html"))
+
     if(
         !req.query ||
         !req.query.banReason ||
@@ -45,7 +68,7 @@ router.get("/form/get", async (req, res) => {
         Unbanned: false
     })
 
-    if(exist) return res.sendFile(path.join(__dirname, "/doubleForm.html"))
+    if(exist) return res.sendFile(path.join(__dirname, "/views/doubleForm.html"))
 
     const newAppeal = new Appeal({
         _id: new mongoose.Types.ObjectId(),
@@ -67,9 +90,10 @@ router.get("/form/get", async (req, res) => {
 
     newAppeal.save()
         .then(doc => console.log(doc))
-        .catch(console.error)
+        .catch(e => { return })
+    //TODO: LOS EMBEDS Y LOS BOTONES ETC..
 
-    return res.sendFile(path.join(__dirname, "/success.html"))
+    return res.sendFile(path.join(__dirname, "/views/success.html"))
 })
 
 async function generateToken() {

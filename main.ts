@@ -42,7 +42,7 @@ app.use(passport.session())
 
 app.use("/api", router);
 
-app.use("/", (req, res) => res.sendFile(path.join(__dirname, "/view/index.html")));
+app.use("/", (req, res) => res.sendFile(path.join(__dirname, "/routes/views/index.html")));
 
 client.on("ready", () => console.log(`Bot iniciado como ${client.user.username}!`));
 
