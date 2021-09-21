@@ -17,12 +17,17 @@ router.get("/discord/redirect", passport.authenticate("discord"), async (req, re
         let isBanned = await checkBans(user.ID)
         if (!isBanned) return res.redirect(req.baseUrl + '/error');
 
+        if(process.env.USUARIOS_BLOQUEADOS.split(", ").includes(user.ID)) return res.redirect(req.baseUrl + '/blocked');
         res.redirect(req.baseUrl + '/form');
     }
 })
 
 router.get("/error", async (req, res) => {
     return res.sendFile(path.join(__dirname, "/views/error.html"))
+})
+
+router.get("/blocked", async (req, res) => {
+    return res.sendFile(path.join(__dirname, "/views/blocked.html"))
 })
 
 router.get("/form", async (req, res) => {
@@ -41,6 +46,7 @@ router.get("/form", async (req, res) => {
     })
 
     if(exist) return res.sendFile(path.join(__dirname, "/views/doubleForm.html"))
+    if(process.env.USUARIOS_BLOQUEADOS.split(", ").includes(user.ID)) return res.redirect(req.baseUrl + '/blocked');
 
     res.append("Content-Type", "text/html").send(getFormHTML(req.user))
     }
@@ -55,6 +61,7 @@ router.get("/form/get", async (req, res) => {
 
     let isBanned = await checkBans(user.ID)
     if (!isBanned) return res.sendFile(path.join(__dirname, "/views/error.html"))
+    if(process.env.USUARIOS_BLOQUEADOS.split(", ").includes(user.ID)) return res.redirect(req.baseUrl + '/blocked');
 
     if(
         !req.query ||
@@ -93,7 +100,7 @@ router.get("/form/get", async (req, res) => {
 
     newAppeal.save()
         .then(doc => console.log(doc))
-        .catch(e => { return res.sendFile(path.join(__dirname, "/views/unknownError.html"))})
+        .catch(e => { console.log(e); return res.sendFile(path.join(__dirname, "/views/unknownError.html"))})
     //TODO: LOS EMBEDS Y LOS BOTONES ETC..
     //TODO: BLOQUEAR USUARIOS O ALGO ASI
 
