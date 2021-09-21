@@ -87,7 +87,6 @@ router.get("/form/get", async (req, res) => {
         UserID: user.ID,
         User: {
             ID: user.ID,
-            Email: user.Email,
             Tag: user.Tag,
             Avatar: user.Avatar
         },

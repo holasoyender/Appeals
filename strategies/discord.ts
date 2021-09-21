@@ -20,11 +20,11 @@ passport.use(new Discord({
     clientID: process.env.CLIENT_ID,
     clientSecret: process.env.CLIENT_SECRET,
     callbackURL: "/api/auth/discord/redirect",
-    scope: ["identify", "guilds", "email"]
+    scope: ["identify", "guilds"]
 }, async (accessToken, refreshToken, profile, done) => {
 
     try {
-        const {id, username, discriminator, avatar, guilds, email} = profile;
+        const {id, username, discriminator, avatar, guilds} = profile;
 
         let user = await User.findOneAndUpdate({
             ID: id
@@ -39,7 +39,6 @@ passport.use(new Discord({
         } else {
             const newUser = User.create({
                 _id: new Mongoose.Types.ObjectId(),
-                Email: email,
                 ID: id,
                 Tag: `${username}#${discriminator}`,
                 Avatar: avatar,
