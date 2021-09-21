@@ -1,6 +1,7 @@
 # Appeals
 
 Sistema de apelación de baneos permanentes del servidor de **LA CABRA**
+Para cualquier pregunta/sugerencia siempre podéis abrir una **issue**
 
 ## Como usar
 
