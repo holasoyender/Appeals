@@ -92,6 +92,7 @@ router.get("/form/get", async (req, res) => {
         .then(doc => console.log(doc))
         .catch(e => { return })
     //TODO: LOS EMBEDS Y LOS BOTONES ETC..
+    //TODO: BLOQUEAR USUARIOS O ALGO ASI
 
     return res.sendFile(path.join(__dirname, "/views/success.html"))
 })

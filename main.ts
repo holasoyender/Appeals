@@ -17,7 +17,7 @@ const client = new Client({
 const app = express();
 const PORT = process.env.PORT || 4001;
 
-mongoose.connect("mongodb://localhost/Appeals", {
+mongoose.connect(process.env.MONGODB_URL, {
     autoIndex: false,
     connectTimeoutMS: 10000,
 })
@@ -30,7 +30,7 @@ app.use(session({
     resave: false,
     saveUninitialized: false,
     store: new Store({
-        mongoUrl: "mongodb://localhost/Appeals",
+        mongoUrl: process.env.MONGODB_URL,
         mongoOptions: {
             connectTimeoutMS: 10000,
         },
