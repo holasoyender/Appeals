@@ -19,7 +19,7 @@ passport.deserializeUser(async (ID, done) => {
 passport.use(new Discord({
     clientID: process.env.CLIENT_ID,
     clientSecret: process.env.CLIENT_SECRET,
-    callbackURL: process.env.CALLBACK_URL,
+    callbackURL: "/api/auth/discord/redirect",
     scope: ["identify", "guilds", "email"]
 }, async (accessToken, refreshToken, profile, done) => {
 

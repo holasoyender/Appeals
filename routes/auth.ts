@@ -12,15 +12,18 @@ router.get("/discord", passport.authenticate("discord"));
 router.get("/discord/redirect", passport.authenticate("discord"), async (req, res) => {
     let user: any = await req.user;
     if (user.Guilds.find(g => g.id === process.env.GUILD_ID)) {
-        return res.sendFile(path.join(__dirname, "/views/error.html"))
+        return res.redirect(req.baseUrl + '/error');
     } else {
         let isBanned = await checkBans(user.ID)
-        if (!isBanned) return res.sendFile(path.join(__dirname, "/views/error.html"))
+        if (!isBanned) return res.redirect(req.baseUrl + '/error');
 
         res.redirect(req.baseUrl + '/form');
     }
 })
-//TODO Arreglar el error de invalid code
+
+router.get("/error", async (req, res) => {
+    return res.sendFile(path.join(__dirname, "/views/error.html"))
+})
 
 router.get("/form", async (req, res) => {
     if(!req.user) return res.redirect(req.baseUrl + '/discord/redirect');
@@ -90,7 +93,7 @@ router.get("/form/get", async (req, res) => {
 
     newAppeal.save()
         .then(doc => console.log(doc))
-        .catch(e => { return })
+        .catch(e => { return res.sendFile(path.join(__dirname, "/views/unknownError.html"))})
     //TODO: LOS EMBEDS Y LOS BOTONES ETC..
     //TODO: BLOQUEAR USUARIOS O ALGO ASI
 
