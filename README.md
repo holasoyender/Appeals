@@ -2,6 +2,15 @@
 
 Sistema de apelación de baneos permanentes del servidor de **LA CABRA**
 
+## Como usar
+
+1 - Crea una aplicación en Discord y añade el siguiente link a la sección Oauth2:
+```https://<URL>:<PUERTO>/api/auth/discord/redirect```
+
+2 - Rellena el archivo [.env](https://github.com/holasoyender/Appeals#ejemplo-de-arcivo-env)
+
+3 - Añade el bot al servidor con los siguientes permisos: `Banear usuarios` y `Mandar mensajes`
+
 ## Ejemplo de arcivo .env
 ```
 PORT=4000
