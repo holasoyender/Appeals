@@ -1,6 +1,6 @@
 # Appeals
 
-Sistema de apelacion de baneos permanentes del servidor de **LA CABRA**
+Sistema de apelación de baneos permanentes del servidor de **LA CABRA**
 
 ## Ejemplo de arcivo .env
 ```
@@ -9,9 +9,11 @@ CLIENT_ID=781240994833104907
 CLIENT_SECRET=elsecretdetucleinte
 APP_SECRET=holasoyender
 GUILD_ID=704029755975925841
+CHANNEL_ID=755000173922615336
 BOT_TOKEN=eltokendelbotparalaapp
 MONGODB_URL=mongodb://localhost/Appeals
 USUARIOS_BLOQUEADOS=146681835491950592, 650899812388044830
+ADMINISTRADORES=396683727868264449, 351378361114951690
 ```
 
 ### PORT (Puerto)
@@ -38,9 +40,13 @@ Clave única para desencriptar las cookies del servidor.
 
 La ID del servidor al que se le va a aplicar este sistema de apelaciones.
 
+### CHANNEL_ID (ID del Canal de apelaciones)
+
+La ID del canal en el que se mandaran los mensajes de apelaciones.
+
 ### BOT_TOKEN (Token del Bot)
 
-El token del oot que estará en tu servidor para comprobar los bans y enviar el mensaje de apelación.
+El token del bot que estará en tu servidor para comprobar los bans y enviar el mensaje de apelación.
 
 ### MONGODB_URL (URL de MongoDB)
 
@@ -49,3 +55,7 @@ URL de la base de datos en MongoDB para guardar toda la información.
 ### USUARIOS_BLOQUEADOS (Usuarios bloqueados)
 
 Lista de los usuarios bloqueados y que no pueden realizar una apelación.
+
+### ADMINISTRADORES (Administradores)
+
+Lista de los administradores del sistema de apelaciones.
