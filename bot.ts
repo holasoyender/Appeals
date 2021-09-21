@@ -4,6 +4,10 @@ import Appeal from "./database/Appeal";
 const client = new Client({
     intents: [ "GUILDS", "GUILD_BANS", "GUILD_MESSAGES", "DIRECT_MESSAGES"]
 })
+/* TODO:
+ - Comandos de slashes para acabar/votar por ID
+ - Comprobar y pulir todo
+*/
 
 client.on("ready", () => {
     client.user?.setPresence({status: 'online', activities: [{name: "lacabra.app", type: "WATCHING"}]});
