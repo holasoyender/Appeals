@@ -21,12 +21,14 @@ El puerto en el que se va a iniciar el servidor.
 ### CLIENT_ID (ID del Cliente)
 
 La ID de la app de Discord para el sistema oauth.
-[una foto]
+
+[![fotico](https://i.imgur.com/yW9neR4.png)](https://www.youtube.com/watch?v=dQw4w9WgXcQ)
 
 ### CLIENT_SECRET (Secret del Cliente)
 
 El código secreto de la app de Discord para el sistema oauth.
-[![fotico](https://i.imgur.com/SvTpAl3.png)](https://www.youtube.com/watch?v=dQw4w9WgXcQ)
+
+[![fotico otra vez](https://i.imgur.com/SvTpAl3.png)](https://www.youtube.com/watch?v=dQw4w9WgXcQ)
 
 ### APP_SECRET (Secret de la APP)
 
