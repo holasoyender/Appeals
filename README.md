@@ -1,6 +1,6 @@
 # Appeals
 
-Sistema de apelación de baneos permanentes del servidor de **LA CABRA**
+Sistema de apelación de baneos permanentes del servidor de **LA CABRA** usando **MongoDB**
 Para cualquier pregunta/sugerencia siempre podéis abrir una **issue**
 
 ## Como usar
@@ -14,6 +14,12 @@ Para cualquier pregunta/sugerencia siempre podéis abrir una **issue**
 URL de ejemplo: ```https://discord.com/api/oauth2/authorize?client_id=<ID-DEL-CLIENTE>&permissions=2147483652&scope=bot%20applications.commands ```
 
 4 - Crea un canal en el que el bot pueda `Mandar mensajes` y `Leer mensajes`
+
+## Comandos disponibles
+
+ - `/appeal <Voto> <ID Apelación>`: Votar en una apelación con la ID
+ - `/block <User>`: Bloquear a un usuario del servicio de apelaciones.
+ - `/unblock <User>`: Desbloquear a un usuario del servicio de apelaciones.
 
 ## Ejemplo de arcivo .env
 ```
@@ -72,3 +78,5 @@ Lista de los administradores del sistema de apelaciones.
 ### ROL_MODERADOR (Rol de Moderador)
 
 La ID del rol con el que los moderadores podrán votar en las apelaciones
+
+
