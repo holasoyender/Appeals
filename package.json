@@ -10,7 +10,7 @@
   "engineStrict": true,
   "scripts": {
     "start": "node dist/main.js",
-    "build": "npm install && tsc && echo Bot complilado correctamente",
+    "build": "npm install -g typescript && tsc && echo Bot complilado correctamente",
     "dev": "ts-node-dev --respawn --transpile-only --poll main.ts",
     "test": "eslint ."
   },
