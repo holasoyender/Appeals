@@ -9,6 +9,8 @@ import Appeal from "./database/Appeal";
 import { REST } from "@discordjs/rest";
 import { Routes } from "discord-api-types/v9";
 import commands from "./commands";
+import Blocked from "./database/Blocked";
+import * as mongoose from "mongoose";
 
 const client = new Client({
     intents: [ "GUILDS", "GUILD_BANS"]
@@ -27,7 +29,7 @@ const rest = new REST({ version: '9' }).setToken(process.env.BOT_TOKEN);
 		console.log('Cargando todos los comandos... (/)');
 
 		await rest.put(
-			Routes.applicationGuildCommands(process.env.CLIENT_ID, "704029755975925841"),
+			Routes.applicationGuildCommands(process.env.CLIENT_ID, process.env.GUILD_ID),
 			{ body: commands },
 		);
 
@@ -294,6 +296,60 @@ client.on("interactionCreate", async (interaction) => {
                     msg.edit({embeds: [embed]})
 
                 }
+                break;
+
+            case "block":
+
+                if (!interaction.options.data[0]) return interaction.reply({
+                    content: ":no_entry_sign:  Ese usuario no existe",
+                    ephemeral: true
+                });
+
+                Blocked.findOne({
+                    ID: interaction.options.data[0].user.id
+                }, (err, res) => {
+                    if (err || res) return interaction.reply({
+                        content: ":no_entry_sign:  Ese usuario ya está bloqueado",
+                        ephemeral: true
+                    });
+
+                    new Blocked({
+                        _id: new mongoose.Types.ObjectId(),
+                        ID: interaction.options.data[0].user.id
+                    }).save().then(doc => {
+                        return interaction.reply({
+                            content: `<:tick2:778321510637109289>  El usuario **${interaction.options.data[0].user.tag}** ha sido bloqueado.`,
+                        }).catch(e => {
+                            console.log(e)
+                            return interaction.reply({
+                                content: ":no_entry_sign:  Ha ocurrido un error!",
+                                ephemeral: true
+                            });
+                        });
+                    })
+                })
+                break;
+
+            case "unblock":
+
+                if (!interaction.options.data[0]) return interaction.reply({
+                    content: ":no_entry_sign:  Ese usuario no existe",
+                    ephemeral: true
+                });
+
+                Blocked.findOne({
+                    ID: interaction.options.data[0].user.id
+                }, (err, res) => {
+                    if (err || !res) return interaction.reply({
+                        content: ":no_entry_sign:  Ese usuario no está bloqueado",
+                        ephemeral: true
+                    });
+
+                    res.delete();
+                    return interaction.reply({
+                        content: `<:tick2:778321510637109289>  El usuario **${interaction.options.data[0].user.tag}** ha sido desbloqueado.`,
+                    })
+                })
                 break;
         }
     }

@@ -6,6 +6,7 @@ import {checkBans, sendAppealEmbed} from "../bot";
 import { getFormHTML } from "./views/form";
 import Appeal from "../database/Appeal";
 import * as mongoose from "mongoose";
+import BlockedUser from "../database/Blocked";
 
 router.get("/discord", passport.authenticate("discord"));
 
@@ -13,7 +14,8 @@ router.get("/discord/redirect", passport.authenticate("discord"), async (req, re
     let user: any = await req.user;
     let isBanned = await checkBans(user.ID)
     if (!isBanned) return res.redirect(req.baseUrl + '/error');
-    if (process.env.USUARIOS_BLOQUEADOS.split(", ").includes(user.ID)) return res.redirect(req.baseUrl + '/blocked');
+    let blockedData = await BlockedUser.find({ID: user.ID})
+    if (blockedData) return res.redirect(req.baseUrl + '/blocked');
 
     res.redirect(req.baseUrl + '/form');
 
@@ -40,7 +42,8 @@ router.get("/form", async (req, res) => {
     })
 
     if (exist) return res.sendFile(path.join(__dirname, "/views/doubleForm.html"))
-    if (process.env.USUARIOS_BLOQUEADOS.split(", ").includes(user.ID)) return res.redirect(req.baseUrl + '/blocked');
+    let blockedData = await BlockedUser.find({ID: user.ID})
+    if (blockedData) return res.redirect(req.baseUrl + '/blocked');
 
     res.append("Content-Type", "text/html").send(getFormHTML(req.user))
 })
@@ -52,7 +55,8 @@ router.get("/form/get", async (req, res) => {
 
     let isBanned = await checkBans(user.ID)
     if (!isBanned) return res.sendFile(path.join(__dirname, "/views/error.html"))
-    if(process.env.USUARIOS_BLOQUEADOS.split(", ").includes(user.ID)) return res.redirect(req.baseUrl + '/blocked');
+    let blockedData = await BlockedUser.find({ID: user.ID})
+    if (blockedData) return res.redirect(req.baseUrl + '/blocked');
 
     if(
         !req.query ||
