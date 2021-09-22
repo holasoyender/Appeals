@@ -7,6 +7,11 @@ import { getFormHTML } from "./views/form";
 import Appeal from "../database/Appeal";
 import * as mongoose from "mongoose";
 import BlockedUser from "../database/Blocked";
+import error from "./views/error";
+import blocked from "./views/blocked";
+import doubleForm from "./views/doubleForm";
+import unknownError from "./views/unknownError";
+import success from "./views/success";
 
 router.get("/discord", passport.authenticate("discord"));
 
@@ -22,11 +27,11 @@ router.get("/discord/redirect", passport.authenticate("discord"), async (req, re
 })
 
 router.get("/error", async (req, res) => {
-    return res.sendFile(path.join(__dirname, "/views/error.html"))
+    return res.append("Content-Type", "text/html").send(error)//res.sendFile(path.join(__dirname, "/views/error.html"))
 })
 
 router.get("/blocked", async (req, res) => {
-    return res.sendFile(path.join(__dirname, "/views/blocked.html"))
+    return res.append("Content-Type", "text/html").send(blocked)//res.sendFile(path.join(__dirname, "/views/blocked.html"))
 })
 
 router.get("/form", async (req, res) => {
@@ -34,14 +39,14 @@ router.get("/form", async (req, res) => {
 
     let user: any = await req.user;
     let isBanned = await checkBans(user.ID)
-    if (!isBanned) return res.sendFile(path.join(__dirname, "/views/error.html"))
+    if (!isBanned) return res.redirect(req.baseUrl + '/error');
 
     let exist = await Appeal.findOne({
         UserID: user.ID,
         Unbanned: false
     })
 
-    if (exist) return res.sendFile(path.join(__dirname, "/views/doubleForm.html"))
+    if (exist) return res.append("Content-Type", "text/html").send(doubleForm)//res.sendFile(path.join(__dirname, "/views/doubleForm.html"))
     let blockedData = await BlockedUser.find({ID: user.ID})
     if (blockedData) return res.redirect(req.baseUrl + '/blocked');
 
@@ -54,7 +59,7 @@ router.get("/form/get", async (req, res) => {
     if(!req.user) return res.redirect(req.baseUrl + '/discord/redirect');
 
     let isBanned = await checkBans(user.ID)
-    if (!isBanned) return res.sendFile(path.join(__dirname, "/views/error.html"))
+    if (!isBanned) return res.redirect(req.baseUrl + '/error');
     let blockedData = await BlockedUser.find({ID: user.ID})
     if (blockedData) return res.redirect(req.baseUrl + '/blocked');
 
@@ -73,7 +78,7 @@ router.get("/form/get", async (req, res) => {
         Unbanned: false
     })
 
-    if(exist) return res.sendFile(path.join(__dirname, "/views/doubleForm.html"))
+    if(exist) return res.append("Content-Type", "text/html").send(doubleForm)//res.sendFile(path.join(__dirname, "/views/doubleForm.html"))
 
     const newAppeal = new Appeal({
         _id: new mongoose.Types.ObjectId(),
@@ -98,12 +103,12 @@ router.get("/form/get", async (req, res) => {
             let appeal = await sendAppealEmbed(user, doc);
             if (!appeal) {
                 console.log("Error: Ha ocurrido un error intentado mandar el embed de apelación al canal\nPor favor, comprueba la configuración")
-                return res.sendFile(path.join(__dirname, "/views/unknownError.html"))
+                return res.append("Content-Type", "text/html").send(unknownError)//res.sendFile(path.join(__dirname, "/views/unknownError.html"))
             }
         })
-        .catch(e => { console.log(e); return res.sendFile(path.join(__dirname, "/views/unknownError.html"))})
+        .catch(e => { console.log(e); return /*res.sendFile(path.join(__dirname, "/views/unknownError.html"))*/ res.append("Content-Type", "text/html").send(unknownError)})
 
-    return res.sendFile(path.join(__dirname, "/views/success.html"))
+    return res.append("Content-Type", "text/html").send(success)//res.sendFile(path.join(__dirname, "/views/success.html"))
 })
 
 async function generateToken() {

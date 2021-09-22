@@ -9,6 +9,7 @@ import mongoose from "mongoose";
 import session from "express-session";
 import * as path from "path";
 import { start } from "./bot";
+import index from "./routes/views/index"
 
 const Store = require("connect-mongo")
 const app = express();
@@ -40,7 +41,7 @@ app.use(passport.session())
 
 app.use("/api", router);
 
-app.use("/", (req:any, res:any) => res.sendFile(path.join(__dirname, "/routes/views/index.html")));
+app.use("/", (req:any, res:any) => /*res.sendFile(path.join(__dirname, "/routes/views/index.html"))*/  res.append("Content-Type", "text/html").send(index));
 
 app.listen(PORT, () => console.log(`Servidor iniciado en el puerto: ${PORT}`));
 start();
