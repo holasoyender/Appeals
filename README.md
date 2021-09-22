@@ -6,11 +6,14 @@ Para cualquier pregunta/sugerencia siempre podéis abrir una **issue**
 ## Como usar
 
 1 - Crea una aplicación en Discord y añade el siguiente link a la sección Oauth2:
-```https://<URL>:<PUERTO>/api/auth/discord/redirect```
+```http://<URL>/api/auth/discord/redirect```
 
-2 - Rellena el archivo [.env](https://github.com/holasoyender/Appeals#ejemplo-de-arcivo-env)
+2 - Rellena el archivo [.env](https://github.com/holasoyender/Appeals#ejemplo-de-arcivo-env) o tu hoja de variables de **Heroku/Netlify**
 
-3 - Añade el bot al servidor con los siguientes permisos: `Banear usuarios` y `Mandar mensajes`
+3 - Añade el bot al servidor con los siguientes permisos: `Banear usuarios`, `Crear slash commands` y `Mandar mensajes`.
+URL de ejemplo: ```https://discord.com/api/oauth2/authorize?client_id=<ID-DEL-CLIENTE>&permissions=2147483652&scope=bot%20applications.commands ```
+
+4 - Crea un canal en el que el bot pueda `Mandar mensajes` y `Leer mensajes`
 
 ## Ejemplo de arcivo .env
 ```
