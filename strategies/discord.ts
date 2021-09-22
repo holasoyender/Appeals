@@ -1,7 +1,7 @@
 import passport from "passport";
 import Discord, {Profile} from "passport-discord";
 import User from "../database/User";
-import * as Mongoose from "mongoose";
+import Mongoose from "mongoose";
 
 passport.serializeUser(async (user:any, done) => {
     let usr = await user;
