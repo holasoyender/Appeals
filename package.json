@@ -37,6 +37,7 @@
     "@types/mongoose": "^5.11.97",
     "@types/passport": "^1.0.7",
     "@types/passport-discord": "^0.1.5",
-    "ts-node-dev": "^1.1.8"
+    "ts-node-dev": "^1.1.8",
+    "tsc": "^2.0.3"
   }
 }
