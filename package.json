@@ -4,7 +4,7 @@
   "description": "Appeals para el servidor de LA CABRA",
   "main": "dist/main.js",
   "engines": {
-    "node": ">=16.9"
+    "node": "16.9.x"
   },
   "engineStrict": true,
   "scripts": {
