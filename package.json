@@ -4,7 +4,7 @@
   "description": "Appeals para el servidor de LA CABRA",
   "main": "dist/main.js",
   "scripts": {
-    "start": "tsc && echo Done && node build/main.js",
+    "start": "tsc && echo Done && node dist/main.js",
     "build": "tsc && echo Bot complilado correctamente",
     "dev": "ts-node-dev --respawn --transpile-only --poll main.ts",
     "test": "eslint ."

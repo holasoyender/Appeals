@@ -1,4 +1,4 @@
-export function getFormHTML(user) {
+export function getFormHTML(user:any) {
 
     let avatar = `https://cdn.discordapp.com/avatars/${user.ID}/${user.Avatar}.webp`
 

@@ -1,12 +1,12 @@
 import { config } from "dotenv";
 config()
 
-import * as express from "express";
+import express from "express";
 import * as passport from "passport";
 import router from "./routes";
 import "./strategies/discord";
 import * as mongoose from "mongoose";
-import * as session from "express-session";
+import session from "express-session";
 import * as path from "path";
 import { start } from "./bot";
 
@@ -14,6 +14,7 @@ const Store = require("connect-mongo")
 const app = express();
 const PORT = process.env.PORT || 4001;
 
+// @ts-ignore
 mongoose.connect(process.env.MONGODB_URL, {
     autoIndex: false,
     connectTimeoutMS: 10000,
@@ -39,7 +40,7 @@ app.use(passport.session())
 
 app.use("/api", router);
 
-app.use("/", (req, res) => res.sendFile(path.join(__dirname, "/routes/views/index.html")));
+app.use("/", (req:any, res:any) => res.sendFile(path.join(__dirname, "/routes/views/index.html")));
 
 app.listen(PORT, () => console.log(`Servidor iniciado en el puerto: ${PORT}`));
 start();

@@ -22,14 +22,15 @@ for (const command of commands) {
 	_commands.push(command.toJSON());
 }
 
+// @ts-ignore
 const rest = new REST({ version: '9' }).setToken(process.env.BOT_TOKEN);
 
 (async () => {
 	try {
 		console.log('Cargando todos los comandos... (/)');
 
-		await rest.put(
-			Routes.applicationGuildCommands(process.env.CLIENT_ID, process.env.GUILD_ID),
+		// @ts-ignore
+        await rest.put(Routes.applicationGuildCommands(process.env.CLIENT_ID, process.env.GUILD_ID),
 			{ body: commands },
 		);
 
@@ -41,7 +42,7 @@ const rest = new REST({ version: '9' }).setToken(process.env.BOT_TOKEN);
 
 client.on("ready", () => {
     client.user?.setPresence({status: 'online', activities: [{name: "lacabra.app", type: "WATCHING"}]});
-    console.log(`Bot iniciado como ${client.user.username}!`)
+    console.log(`Bot iniciado como ${client.user?.username}!`)
 });
 
 client.on("interactionCreate", async (interaction) => {
@@ -146,7 +147,7 @@ client.on("interactionCreate", async (interaction) => {
         }
         if (args[1] === "end") {
 
-            if (!process.env.ADMINISTRADORES.split(",").includes(interaction.user.id)) return interaction.reply({
+            if (!process.env.ADMINISTRADORES?.split(",").includes(interaction.user.id)) return interaction.reply({
                 content: `<:new_aviso:761805859100688394>  No puedes terminar esta votación.`,
                 ephemeral: true
             });
@@ -175,9 +176,9 @@ client.on("interactionCreate", async (interaction) => {
                 let voto = interaction.options.data.find(cmd => cmd.name == "voto");
                 let id = interaction.options.data.find(cmd => cmd.name == "id")
 
-                if (voto.value == "ban") {
+                if (voto?.value == "ban") {
 
-                    let _Appeal: any = await Appeal.findOne({AppealID: id.value, Unbanned: false})
+                    let _Appeal: any = await Appeal.findOne({AppealID: id?.value, Unbanned: false})
                     if (!_Appeal) return interaction.reply({
                         content: ":no_entry_sign:  Esta petición de apelación no existe!",
                         ephemeral: true
@@ -209,7 +210,8 @@ client.on("interactionCreate", async (interaction) => {
                     if (!string)
                         string = "<:GREEN1:876413128223621180>" + "<:GREEN2:876413127724523532>".repeat(yesVotes) + "<:RED2:876414122907025448>".repeat(noVotes) + "<:RED3:876414122860904518>"
 
-                    let channel = interaction.guild.channels.cache.get(process.env.CHANNEL_ID)
+                    // @ts-ignore
+                    let channel = interaction.guild?.channels.cache.get(process.env.CHANNEL_ID)
                     if (!channel) return interaction.reply({
                         content: ":no_entry_sign:  Esta petición de apelación no existe!",
                         ephemeral: true
@@ -235,9 +237,9 @@ client.on("interactionCreate", async (interaction) => {
                     msg.edit({embeds: [embed]})
 
                 }
-                if (voto.value == "unban") {
+                if (voto?.value == "unban") {
 
-                    let _Appeal: any = await Appeal.findOne({AppealID: id.value, Unbanned: false})
+                    let _Appeal: any = await Appeal.findOne({AppealID: id?.value, Unbanned: false})
                     if (!_Appeal) return interaction.reply({
                         content: ":no_entry_sign:  Esta petición de apelación no existe!",
                         ephemeral: true
@@ -270,7 +272,8 @@ client.on("interactionCreate", async (interaction) => {
                     if (!string)
                         string = "<:GREEN1:876413128223621180>" + "<:GREEN2:876413127724523532>".repeat(yesVotes) + "<:RED2:876414122907025448>".repeat(noVotes) + "<:RED3:876414122860904518>"
 
-                    let channel = interaction.guild.channels.cache.get(process.env.CHANNEL_ID)
+                    // @ts-ignore
+                    let channel = interaction.guild?.channels.cache.get(process.env.CHANNEL_ID)
                     if (!channel) return interaction.reply({
                         content: ":no_entry_sign:  Esta petición de apelación no existe!",
                         ephemeral: true
@@ -306,8 +309,8 @@ client.on("interactionCreate", async (interaction) => {
                 });
 
                 Blocked.findOne({
-                    ID: interaction.options.data[0].user.id
-                }, (err, res) => {
+                    ID: interaction.options.data[0].user?.id
+                }, (err:any, res:any) => {
                     if (err || res) return interaction.reply({
                         content: ":no_entry_sign:  Ese usuario ya está bloqueado",
                         ephemeral: true
@@ -315,10 +318,10 @@ client.on("interactionCreate", async (interaction) => {
 
                     new Blocked({
                         _id: new mongoose.Types.ObjectId(),
-                        ID: interaction.options.data[0].user.id
+                        ID: interaction.options.data[0].user?.id
                     }).save().then(doc => {
                         return interaction.reply({
-                            content: `<:tick2:778321510637109289>  El usuario **${interaction.options.data[0].user.tag}** ha sido bloqueado.`,
+                            content: `<:tick2:778321510637109289>  El usuario **${interaction.options.data[0].user?.tag}** ha sido bloqueado.`,
                         }).catch(e => {
                             console.log(e)
                             return interaction.reply({
@@ -338,8 +341,8 @@ client.on("interactionCreate", async (interaction) => {
                 });
 
                 Blocked.findOne({
-                    ID: interaction.options.data[0].user.id
-                }, (err, res) => {
+                    ID: interaction.options.data[0].user?.id
+                }, (err:any, res:any) => {
                     if (err || !res) return interaction.reply({
                         content: ":no_entry_sign:  Ese usuario no está bloqueado",
                         ephemeral: true
@@ -347,7 +350,7 @@ client.on("interactionCreate", async (interaction) => {
 
                     res.delete();
                     return interaction.reply({
-                        content: `<:tick2:778321510637109289>  El usuario **${interaction.options.data[0].user.tag}** ha sido desbloqueado.`,
+                        content: `<:tick2:778321510637109289>  El usuario **${interaction.options.data[0].user?.tag}** ha sido desbloqueado.`,
                     })
                 })
                 break;
@@ -357,10 +360,11 @@ client.on("interactionCreate", async (interaction) => {
     function unbanUser(interaction: ButtonInteraction) {
 
         let args = interaction.customId.split("-")
-        let channel = interaction.guild.channels.cache.get(process.env.CHANNEL_ID)
+        // @ts-ignore
+        let channel = interaction.guild?.channels.cache.get(process.env.CHANNEL_ID)
         if (!channel || channel.type !== "GUILD_TEXT") return;
 
-        Appeal.findOne({AppealID: args[2], Unbanned: false}, (err, res) => {
+        Appeal.findOne({AppealID: args[2], Unbanned: false}, (err:any, res:any) => {
             if (!res) return interaction.reply({
                 content: ":no_entry_sign:  Esta votación ya ha acabado!",
                 ephemeral: true
@@ -398,11 +402,11 @@ client.on("interactionCreate", async (interaction) => {
             interaction.message.edit({
                 components: [new MessageActionRow().addComponents(_voteYesButton, _voteNoButton, _endButton)],
                 embeds: [embed]
-            }).catch(e => {
+            }).catch((e:any) => {
             })
 
             try {
-                interaction.guild.bans.remove(res.UserID, "Apelación aprobada").catch(e => {})
+                interaction.guild?.bans.remove(res.UserID, "Apelación aprobada").catch(e => {})
                 return interaction.reply({
                     content: "<:tick2:778321510637109289>  El usuario ha sido **desbaneado**",
                     ephemeral: true
@@ -421,10 +425,11 @@ client.on("interactionCreate", async (interaction) => {
     function banUser(interaction: ButtonInteraction) {
 
         let args = interaction.customId.split("-")
-        let channel = interaction.guild.channels.cache.get(process.env.CHANNEL_ID)
+        // @ts-ignore
+        let channel = interaction.guild?.channels.cache.get(process.env.CHANNEL_ID)
         if(!channel || channel.type !== "GUILD_TEXT") return;
 
-        Appeal.findOne({AppealID: args[2], Unbanned: false}, (err, res) => {
+        Appeal.findOne({AppealID: args[2], Unbanned: false}, (err:any, res:any) => {
             if (!res) return interaction.reply({
                 content: ":no_entry_sign:  Esta votación ya ha acabado!",
                 ephemeral: true
@@ -469,7 +474,8 @@ client.on("interactionCreate", async (interaction) => {
     }
 })
 
-export async function checkBans(userId) {
+export async function checkBans(userId:any) {
+    // @ts-ignore
     let guild = client.guilds.cache.get(process.env.GUILD_ID);
     if(!guild) return false
     try {
@@ -483,8 +489,10 @@ export async function checkBans(userId) {
 
 export async function sendAppealEmbed(user: any, _appeal:any) {
 
+    // @ts-ignore
     let guild = client.guilds.cache.get(process.env.GUILD_ID);
     if(!guild) return false
+    // @ts-ignore
     let channel = guild.channels.cache.get(process.env.CHANNEL_ID)
     if(!channel || channel.type !== "GUILD_TEXT") return false;
 

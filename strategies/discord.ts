@@ -1,5 +1,5 @@
 import * as passport from "passport";
-import * as Discord from "passport-discord";
+import Discord, {Profile} from "passport-discord";
 import User from "../database/User";
 import * as Mongoose from "mongoose";
 
@@ -18,37 +18,39 @@ passport.deserializeUser(async (ID, done) => {
     }
 })
 
-passport.use(new Discord({
-    clientID: process.env.CLIENT_ID,
-    clientSecret: process.env.CLIENT_SECRET,
-    callbackURL: "/api/auth/discord/redirect",
-    scope: ["identify"]
-}, async (accessToken, refreshToken, profile, done) => {
+if(process.env.CLIENT_ID && process.env.CLIENT_SECRET) {
+    passport.use(new Discord({
+        clientID: process.env.CLIENT_ID.toString(),
+        clientSecret: process.env.CLIENT_SECRET.toString(),
+        callbackURL: "/api/auth/discord/redirect",
+        scope: ["identify"]
+    }, async (accessToken: string, refreshToken: string, profile: Profile, done: any) => {
 
-    try {
-        const {id, username, discriminator, avatar} = profile;
+        try {
+            const {id, username, discriminator, avatar} = profile;
 
-        let user = await User.findOneAndUpdate({
-            ID: id
-        }, {
-            Tag: `${username}#${discriminator}`,
-            Avatar: avatar,
-        }, {new: true})
-
-        if (user) {
-            return done(null, user)
-        } else {
-            const newUser = User.create({
-                _id: new Mongoose.Types.ObjectId(),
-                ID: id,
+            let user = await User.findOneAndUpdate({
+                ID: id
+            }, {
                 Tag: `${username}#${discriminator}`,
                 Avatar: avatar,
-            })
-            return done(null, newUser);
-        }
-    } catch (e) {
-        console.log(e);
-        return done(e, null)
-    }
+            }, {new: true})
 
-}))
+            if (user) {
+                return done(null, user)
+            } else {
+                const newUser = User.create({
+                    _id: new Mongoose.Types.ObjectId(),
+                    ID: id,
+                    Tag: `${username}#${discriminator}`,
+                    Avatar: avatar,
+                })
+                return done(null, newUser);
+            }
+        } catch (e) {
+            console.log(e);
+            return done(e, null)
+        }
+
+    }))
+}
