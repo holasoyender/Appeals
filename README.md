@@ -22,7 +22,6 @@ GUILD_ID=704029755975925841
 CHANNEL_ID=755000173922615336
 BOT_TOKEN=eltokendelbotparalaapp
 MONGODB_URL=mongodb://localhost/Appeals
-USUARIOS_BLOQUEADOS=146681835491950592, 650899812388044830
 ADMINISTRADORES=396683727868264449, 351378361114951690
 ROL_MODERADOR=728584717879869461
 ```
@@ -62,10 +61,6 @@ El token del bot que estará en tu servidor para comprobar los bans y enviar el 
 ### MONGODB_URL (URL de MongoDB)
 
 URL de la base de datos en MongoDB para guardar toda la información.
-
-### USUARIOS_BLOQUEADOS (Usuarios bloqueados)
-
-Lista de los usuarios bloqueados y que no pueden realizar una apelación.
 
 ### ADMINISTRADORES (Administradores)
 
