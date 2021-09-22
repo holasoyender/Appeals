@@ -11,14 +11,8 @@ import { Routes } from "discord-api-types/v9";
 import commands from "./commands";
 
 const client = new Client({
-    intents: [ "GUILDS", "GUILD_BANS", "GUILD_MESSAGES", "DIRECT_MESSAGES"]
+    intents: [ "GUILDS", "GUILD_BANS"]
 })
-
-
-/* TODO:
- - Rol de moderador?
- - Comprobar y pulir todo
-*/
 
 const _commands = [];
 
@@ -49,6 +43,12 @@ client.on("ready", () => {
 });
 
 client.on("interactionCreate", async (interaction) => {
+
+    //@ts-ignore
+    if(!interaction.member.roles.cache.find(r => r.id === process.env.ROL_MODERADOR)) return interaction.reply({
+                content: ":no_entry_sign:  No tienes permisos para realizar esta acción!",
+                ephemeral: true
+            })
 
     if (interaction.isButton()) {
 

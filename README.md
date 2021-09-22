@@ -24,6 +24,7 @@ BOT_TOKEN=eltokendelbotparalaapp
 MONGODB_URL=mongodb://localhost/Appeals
 USUARIOS_BLOQUEADOS=146681835491950592, 650899812388044830
 ADMINISTRADORES=396683727868264449, 351378361114951690
+ROL_MODERADOR=728584717879869461
 ```
 
 ### PORT (Puerto)
@@ -69,3 +70,7 @@ Lista de los usuarios bloqueados y que no pueden realizar una apelación.
 ### ADMINISTRADORES (Administradores)
 
 Lista de los administradores del sistema de apelaciones.
+
+### ROL_MODERADOR (Rol de Moderador)
+
+La ID del rol con el que los moderadores podrán votar en las apelaciones
