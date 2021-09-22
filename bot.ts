@@ -8,9 +8,7 @@ import {
 import Appeal from "./database/Appeal";
 import { REST } from "@discordjs/rest";
 import { Routes } from "discord-api-types/v9";
-import * as fs from "fs"
 import commands from "./commands";
-import {SlashCommandBuilder} from "@discordjs/builders";
 
 const client = new Client({
     intents: [ "GUILDS", "GUILD_BANS", "GUILD_MESSAGES", "DIRECT_MESSAGES"]
@@ -18,7 +16,7 @@ const client = new Client({
 
 
 /* TODO:
- - Comandos de slashes para acabar/votar por ID
+ - Rol de moderador?
  - Comprobar y pulir todo
 */
 
