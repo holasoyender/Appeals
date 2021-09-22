@@ -1,4 +1,4 @@
-import * as passport from "passport";
+import passport from "passport";
 import Discord, {Profile} from "passport-discord";
 import User from "../database/User";
 import * as Mongoose from "mongoose";

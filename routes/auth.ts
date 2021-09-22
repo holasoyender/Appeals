@@ -1,6 +1,6 @@
 import { Router } from "express";
 const router = Router();
-import * as passport from "passport";
+import passport from "passport";
 import * as path from "path";
 import {checkBans, sendAppealEmbed} from "../bot";
 import { getFormHTML } from "./views/form";

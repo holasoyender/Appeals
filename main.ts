@@ -2,10 +2,10 @@ import { config } from "dotenv";
 config()
 
 import express from "express";
-import * as passport from "passport";
+import passport from "passport";
 import router from "./routes";
 import "./strategies/discord";
-import * as mongoose from "mongoose";
+import mongoose from "mongoose";
 import session from "express-session";
 import * as path from "path";
 import { start } from "./bot";
