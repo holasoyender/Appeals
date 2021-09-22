@@ -20,7 +20,9 @@
   },
   "homepage": "https://github.com/holasoyender/Appeals#readme",
   "dependencies": {
+    "@discordjs/rest": "^0.1.0-canary.0",
     "connect-mongo": "^4.6.0",
+    "discord-api-types": "^0.23.1",
     "discord.js": "^13.1.0",
     "dotenv": "^10.0.0",
     "express": "^4.17.1",

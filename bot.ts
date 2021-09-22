@@ -1,13 +1,49 @@
-import {ButtonInteraction, Client, MessageActionRow, MessageButton, MessageEmbed} from "discord.js"
+import {
+    ButtonInteraction,
+    Client,
+    MessageActionRow,
+    MessageButton,
+    MessageEmbed
+} from "discord.js"
 import Appeal from "./database/Appeal";
+import { REST } from "@discordjs/rest";
+import { Routes } from "discord-api-types/v9";
+import * as fs from "fs"
+import commands from "./commands";
+import {SlashCommandBuilder} from "@discordjs/builders";
 
 const client = new Client({
     intents: [ "GUILDS", "GUILD_BANS", "GUILD_MESSAGES", "DIRECT_MESSAGES"]
 })
+
+
 /* TODO:
  - Comandos de slashes para acabar/votar por ID
  - Comprobar y pulir todo
 */
+
+const _commands = [];
+
+for (const command of commands) {
+	_commands.push(command.toJSON());
+}
+
+const rest = new REST({ version: '9' }).setToken(process.env.BOT_TOKEN);
+
+(async () => {
+	try {
+		console.log('Cargando todos los comandos... (/)');
+
+		await rest.put(
+			Routes.applicationGuildCommands(process.env.CLIENT_ID, "704029755975925841"),
+			{ body: commands },
+		);
+
+		console.log('Todos los comandos han sido recargados! (/)');
+	} catch (error) {
+		console.error(error);
+	}
+})();
 
 client.on("ready", () => {
     client.user?.setPresence({status: 'online', activities: [{name: "lacabra.app", type: "WATCHING"}]});
@@ -63,7 +99,8 @@ client.on("interactionCreate", async (interaction) => {
             //@ts-ignore
             embed.setDescription(`Progreso de la votación:\n\n \`[${_Appeal.ClickersYes.length}/${all}]\` ${string} \`[${_Appeal.ClickersNo.length}/${all}]\`\n`)
             //@ts-ignore
-            interaction.message.edit({embeds: [ embed]})        }
+            interaction.message.edit({embeds: [embed]})
+        }
         if (args[1] === "no") {
 
             let AppealID = args[2]
@@ -104,7 +141,7 @@ client.on("interactionCreate", async (interaction) => {
             //@ts-ignore
             embed.setDescription(`Progreso de la votación:\n\n \`[${_Appeal.ClickersYes.length}/${all}]\` ${string} \`[${_Appeal.ClickersNo.length}/${all}]\`\n`)
             //@ts-ignore
-            interaction.message.edit({embeds: [ embed]})
+            interaction.message.edit({embeds: [embed]})
 
         }
         if (args[1] === "end") {
@@ -126,6 +163,140 @@ client.on("interactionCreate", async (interaction) => {
             if (_Appeal.ClickersNo.length > _Appeal.ClickersYes.length) return banUser(interaction)
             if (_Appeal.ClickersYes.length == _Appeal.ClickersNo.length) return unbanUser(interaction)
 
+        }
+    }
+
+    if (interaction.isCommand()) {
+
+        switch (interaction.commandName) {
+
+            case "appeal":
+
+                let voto = interaction.options.data.find(cmd => cmd.name == "voto");
+                let id = interaction.options.data.find(cmd => cmd.name == "id")
+
+                if (voto.value == "ban") {
+
+                    let _Appeal: any = await Appeal.findOne({AppealID: id.value, Unbanned: false})
+                    if (!_Appeal) return interaction.reply({
+                        content: ":no_entry_sign:  Esta petición de apelación no existe!",
+                        ephemeral: true
+                    })
+
+                    if (_Appeal.ClickersNo.includes(interaction.user.id)) return interaction.reply({
+                        content: `<:new_aviso:761805859100688394>  Ya has votado **banear** al usuario <@!${_Appeal.UserID}>.`,
+                        ephemeral: true
+                    });
+
+                    if (_Appeal.ClickersYes.includes(interaction.user.id)) {
+                        _Appeal.ClickersYes = _Appeal.ClickersYes.filter((item: any) => item !== interaction.user.id)
+                    }
+                    await interaction.reply({
+                        content: `<:success:830860492112265217>  Has votado **banear** al usuario <@!${_Appeal.UserID}>.`,
+                        ephemeral: true
+                    });
+                    _Appeal.ClickersNo.push(interaction.user.id)
+                    _Appeal.save();
+
+                    let all = _Appeal.ClickersYes.length + _Appeal.ClickersNo.length
+                    let yesVotes = Math.round(_Appeal.ClickersYes.length / all * 10)
+                    let noVotes = Math.round(_Appeal.ClickersNo.length / all * 10)
+
+                    let string;
+                    if (yesVotes === 10) string = "<:GREEN1:876413128223621180>" + "<:GREEN2:876413127724523532>".repeat(yesVotes) + "<:GREEN3:876413128164933672>"
+                    if (noVotes === 10) string = "<:RED1:876414122714091532>" + "<:RED2:876414122907025448>".repeat(noVotes) + "<:RED3:876414122860904518>"
+
+                    if (!string)
+                        string = "<:GREEN1:876413128223621180>" + "<:GREEN2:876413127724523532>".repeat(yesVotes) + "<:RED2:876414122907025448>".repeat(noVotes) + "<:RED3:876414122860904518>"
+
+                    let channel = interaction.guild.channels.cache.get(process.env.CHANNEL_ID)
+                    if (!channel) return interaction.reply({
+                        content: ":no_entry_sign:  Esta petición de apelación no existe!",
+                        ephemeral: true
+                    })
+
+                    let msg: any = undefined;
+                    try {
+                        // @ts-ignore
+                        msg = await channel.messages.fetch(_Appeal.MessageID);
+                    } catch (e) {
+                        return interaction.reply({
+                            content: ":no_entry_sign:  Esta petición de apelación no existe!",
+                            ephemeral: true
+                        });
+                    }
+                    if (!msg) return interaction.reply({
+                        content: ":no_entry_sign:  Esta petición de apelación no existe!",
+                        ephemeral: true
+                    });
+
+                    let embed = msg.embeds[0]
+                    embed.setDescription(`Progreso de la votación:\n\n \`[${_Appeal.ClickersYes.length}/${all}]\` ${string} \`[${_Appeal.ClickersNo.length}/${all}]\`\n`)
+                    msg.edit({embeds: [embed]})
+
+                }
+                if (voto.value == "unban") {
+
+                    let _Appeal: any = await Appeal.findOne({AppealID: id.value, Unbanned: false})
+                    if (!_Appeal) return interaction.reply({
+                        content: ":no_entry_sign:  Esta petición de apelación no existe!",
+                        ephemeral: true
+                    })
+
+                    if (_Appeal.ClickersYes.includes(interaction.user.id)) return interaction.reply({
+                        content: `<:new_aviso:761805859100688394>  Ya has votado **desbanear** al usuario <@!${_Appeal.UserID}>.`,
+                        ephemeral: true
+                    });
+
+                    if (_Appeal.ClickersNo.includes(interaction.user.id)) {
+                        _Appeal.ClickersNo = _Appeal.ClickersNo.filter((item: any) => item !== interaction.user.id)
+                    }
+
+                    await interaction.reply({
+                        content: `<:success:830860492112265217>  Has votado **desbanear** al usuario <@!${_Appeal.UserID}>.`,
+                        ephemeral: true
+                    });
+                    _Appeal.ClickersYes.push(interaction.user.id)
+                    _Appeal.save();
+
+                    let all = _Appeal.ClickersYes.length + _Appeal.ClickersNo.length
+                    let yesVotes = Math.round(_Appeal.ClickersYes.length / all * 10)
+                    let noVotes = Math.round(_Appeal.ClickersNo.length / all * 10)
+
+                    let string;
+                    if (yesVotes === 10) string = "<:GREEN1:876413128223621180>" + "<:GREEN2:876413127724523532>".repeat(yesVotes) + "<:GREEN3:876413128164933672>"
+                    if (noVotes === 10) string = "<:RED1:876414122714091532>" + "<:RED2:876414122907025448>".repeat(noVotes) + "<:RED3:876414122860904518>"
+
+                    if (!string)
+                        string = "<:GREEN1:876413128223621180>" + "<:GREEN2:876413127724523532>".repeat(yesVotes) + "<:RED2:876414122907025448>".repeat(noVotes) + "<:RED3:876414122860904518>"
+
+                    let channel = interaction.guild.channels.cache.get(process.env.CHANNEL_ID)
+                    if (!channel) return interaction.reply({
+                        content: ":no_entry_sign:  Esta petición de apelación no existe!",
+                        ephemeral: true
+                    })
+
+                    let msg: any = undefined;
+                    try {
+                        // @ts-ignore
+                        msg = await channel.messages.fetch(_Appeal.MessageID);
+                    } catch (e) {
+                        return interaction.reply({
+                            content: ":no_entry_sign:  Esta petición de apelación no existe!",
+                            ephemeral: true
+                        });
+                    }
+                    if (!msg) return interaction.reply({
+                        content: ":no_entry_sign:  Esta petición de apelación no existe!",
+                        ephemeral: true
+                    });
+
+                    let embed = msg.embeds[0]
+                    embed.setDescription(`Progreso de la votación:\n\n \`[${_Appeal.ClickersYes.length}/${all}]\` ${string} \`[${_Appeal.ClickersNo.length}/${all}]\`\n`)
+                    msg.edit({embeds: [embed]})
+
+                }
+                break;
         }
     }
 
@@ -272,11 +443,11 @@ export async function sendAppealEmbed(user: any, _appeal:any) {
     let appeal = await _appeal
     if(!appeal) return false;
 
-    let mod = reason.split("Baneado por: ")[1]
+    let mod = reason.split(" Baneado por: ")[1]
     if(!mod){
         mod = "Sin moderador"
     }else {
-        reason = reason.split("Baneado por: ")[0]
+        reason = reason.split(" Baneado por: ")[0] || "Sin razón"
     }
     let progress = "<:GRIS2:889925177788485702>".repeat(10)
 
