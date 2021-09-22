@@ -3,6 +3,10 @@
   "version": "0.0.1",
   "description": "Appeals para el servidor de LA CABRA",
   "main": "dist/main.js",
+  "engines": {
+    "node": ">=16.9"
+  },
+  "engineStrict": true,
   "scripts": {
     "start": "node dist/main.js",
     "build": "npm install && tsc && echo Bot complilado correctamente",
