@@ -2,6 +2,7 @@
 
 Sistema de apelación de baneos permanentes del servidor de **LA CABRA** usando **MongoDB**
 Para cualquier pregunta/sugerencia siempre podéis abrir una **issue**
+Demo: http://cabrapeals.cluster-0.kirobot.cc/
 
 ## Como usar
 
