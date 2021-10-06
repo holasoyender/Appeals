@@ -1,6 +1,6 @@
 import {
     ButtonInteraction,
-    Client,
+    Client, Message,
     MessageActionRow,
     MessageButton,
     MessageEmbed
@@ -13,7 +13,7 @@ import Blocked from "./database/Blocked";
 import mongoose from "mongoose";
 
 const client = new Client({
-    intents: [ "GUILDS", "GUILD_BANS"]
+    intents: [ "GUILDS", "GUILD_BANS", "DIRECT_MESSAGES"]
 })
 
 const _commands = [];
@@ -365,86 +365,132 @@ export async function sendAppealEmbed(user: any, _appeal:any) {
 export function start() {
     client.login(process.env.BOT_TOKEN).catch()
 }
-async function voteYes(AppealID:any, interaction:ButtonInteraction){
+async function voteYes(AppealID:any, interaction:ButtonInteraction) {
 
-            let _Appeal: any = await Appeal.findOne({AppealID})
-            if (!_Appeal) return interaction.reply({
-                content: ":no_entry_sign:  Esta petición de apelación no existe!",
-                ephemeral: true
-            })
+    let _Appeal: any = await Appeal.findOne({AppealID})
+    if (!_Appeal) return interaction.reply({
+        content: ":no_entry_sign:  Esta petición de apelación no existe!",
+        ephemeral: true
+    })
 
-            if (_Appeal.ClickersYes.includes(interaction.user.id)) return interaction.reply({
-                content: `<:new_aviso:761805859100688394>  Ya has votado **desbanear** al usuario <@!${_Appeal.UserID}>.`,
-                ephemeral: true
-            });
+    if (_Appeal.ClickersYes.includes(interaction.user.id)) return interaction.reply({
+        content: `<:new_aviso:761805859100688394>  Ya has votado **desbanear** al usuario <@!${_Appeal.UserID}>.`,
+        ephemeral: true
+    });
 
-            if (_Appeal.ClickersNo.includes(interaction.user.id)) {
-                _Appeal.ClickersNo = _Appeal.ClickersNo.filter((item: any) => item !== interaction.user.id)
-            }
+    if (_Appeal.ClickersNo.includes(interaction.user.id)) {
+        _Appeal.ClickersNo = _Appeal.ClickersNo.filter((item: any) => item !== interaction.user.id)
+    }
 
-            await interaction.reply({
-                content: `<:success:830860492112265217>  Has votado **desbanear** al usuario <@!${_Appeal.UserID}>.`,
-                ephemeral: true
-            });
-            _Appeal.ClickersYes.push(interaction.user.id)
-            _Appeal.save();
+    await interaction.reply({
+        content: `<:success:830860492112265217>  Has votado **desbanear** al usuario <@!${_Appeal.UserID}>.`,
+        ephemeral: true
+    });
+    _Appeal.ClickersYes.push(interaction.user.id)
+    _Appeal.save();
 
-            let all = _Appeal.ClickersYes.length + _Appeal.ClickersNo.length
-            let yesVotes = Math.round(_Appeal.ClickersYes.length / all * 10)
-            let noVotes = Math.round(_Appeal.ClickersNo.length / all * 10)
+    let all = _Appeal.ClickersYes.length + _Appeal.ClickersNo.length
+    let yesVotes = Math.round(_Appeal.ClickersYes.length / all * 10)
+    let noVotes = Math.round(_Appeal.ClickersNo.length / all * 10)
 
-            let string;
-            if (yesVotes === 10) string = "<:GREEN1:876413128223621180>" + "<:GREEN2:876413127724523532>".repeat(yesVotes) + "<:GREEN3:876413128164933672>"
-            if (noVotes === 10) string = "<:RED1:876414122714091532>" + "<:RED2:876414122907025448>".repeat(noVotes) + "<:RED3:876414122860904518>"
+    let string;
+    if (yesVotes === 10) string = "<:GREEN1:876413128223621180>" + "<:GREEN2:876413127724523532>".repeat(yesVotes) + "<:GREEN3:876413128164933672>"
+    if (noVotes === 10) string = "<:RED1:876414122714091532>" + "<:RED2:876414122907025448>".repeat(noVotes) + "<:RED3:876414122860904518>"
 
-            if (!string)
-                string = "<:GREEN1:876413128223621180>" + "<:GREEN2:876413127724523532>".repeat(yesVotes) + "<:RED2:876414122907025448>".repeat(noVotes) + "<:RED3:876414122860904518>"
+    if (!string)
+        string = "<:GREEN1:876413128223621180>" + "<:GREEN2:876413127724523532>".repeat(yesVotes) + "<:RED2:876414122907025448>".repeat(noVotes) + "<:RED3:876414122860904518>"
 
-            let embed = interaction.message.embeds[0]
-            //@ts-ignore
-            embed.setDescription(`Progreso de la votación:\n\n \`[${_Appeal.ClickersYes.length}/${all}]\` ${string} \`[${_Appeal.ClickersNo.length}/${all}]\`\n`)
-            //@ts-ignore
-            interaction.message.edit({embeds: [embed]})
+    let embed = interaction.message.embeds[0]
+    //@ts-ignore
+    embed.setDescription(`Progreso de la votación:\n\n \`[${_Appeal.ClickersYes.length}/${all}]\` ${string} \`[${_Appeal.ClickersNo.length}/${all}]\`\n`)
+    //@ts-ignore
+    interaction.message.edit({embeds: [embed]})
+
+    await interaction.user.send({content: `Hola :wave: <@!${interaction.user.id}>\nHas votado **desbaneaar** en la apelación de <@!${_Appeal.UserID}>. ¿Puedes argumentar tu voto?\n\`Puedes esperar 5 minutos o decir no para no argumentar\``})
+    const filter = (m: any) => m.content !== "";
+    const collector = interaction.user.dmChannel?.createMessageCollector({filter: filter, max: 1, time: 300000})
+
+    collector?.on("collect", (msg: Message) => {
+        msg.react("830858804236517392")
+        if (msg.content.toLowerCase() == "no") return collector?.stop("no")
+        return collector?.stop(msg.content)
+    })
+    collector?.on("end", (collected: any, reason: any) => {
+        let Embed = new MessageEmbed()
+            .setColor("#57F287")
+            .setAuthor(`Voto a favor de ${interaction.user.tag}`, `${interaction.user.avatarURL()}`)
+            .setDescription(`Apelación de: <@!${_Appeal.UserID}> (${_Appeal.UserID}) con id: \`${_Appeal.AppealID}\``)
+
+        if (reason == "no" || reason == "time") //@ts-ignore
+            return interaction.guild?.channels.cache.get(process.env.ARGUMENT_CHANNEL_ID).send({embeds: [Embed]})
+
+        Embed.addField("Argumentación: ", reason)
+        //@ts-ignore
+        interaction.guild?.channels.cache.get(process.env.ARGUMENT_CHANNEL_ID).send({embeds: [Embed]})
+    })
 }
 async function voteNo(AppealID:any, interaction:ButtonInteraction) {
 
-            let _Appeal: any = await Appeal.findOne({AppealID})
-            if (!_Appeal) return interaction.reply({
-                content: ":no_entry_sign:  Esta petición de apelación no existe!",
-                ephemeral: true
-            })
+    let _Appeal: any = await Appeal.findOne({AppealID})
+    if (!_Appeal) return interaction.reply({
+        content: ":no_entry_sign:  Esta petición de apelación no existe!",
+        ephemeral: true
+    })
 
-            if (_Appeal.ClickersNo.includes(interaction.user.id)) return interaction.reply({
-                content: `<:new_aviso:761805859100688394>  Ya has votado **banear** al usuario <@!${_Appeal.UserID}>.`,
-                ephemeral: true
-            });
+    if (_Appeal.ClickersNo.includes(interaction.user.id)) return interaction.reply({
+        content: `<:new_aviso:761805859100688394>  Ya has votado **banear** al usuario <@!${_Appeal.UserID}>.`,
+        ephemeral: true
+    });
 
-            if (_Appeal.ClickersYes.includes(interaction.user.id)) {
-                _Appeal.ClickersYes = _Appeal.ClickersYes.filter((item: any) => item !== interaction.user.id)
-            }
-            await interaction.reply({
-                content: `<:success:830860492112265217>  Has votado **banear** al usuario <@!${_Appeal.UserID}>.`,
-                ephemeral: true
-            });
-            _Appeal.ClickersNo.push(interaction.user.id)
-            _Appeal.save();
+    if (_Appeal.ClickersYes.includes(interaction.user.id)) {
+        _Appeal.ClickersYes = _Appeal.ClickersYes.filter((item: any) => item !== interaction.user.id)
+    }
+    await interaction.reply({
+        content: `<:success:830860492112265217>  Has votado **banear** al usuario <@!${_Appeal.UserID}>.`,
+        ephemeral: true
+    });
+    _Appeal.ClickersNo.push(interaction.user.id)
+    _Appeal.save();
 
-            let all = _Appeal.ClickersYes.length + _Appeal.ClickersNo.length
-            let yesVotes = Math.round(_Appeal.ClickersYes.length / all * 10)
-            let noVotes = Math.round(_Appeal.ClickersNo.length / all * 10)
+    let all = _Appeal.ClickersYes.length + _Appeal.ClickersNo.length
+    let yesVotes = Math.round(_Appeal.ClickersYes.length / all * 10)
+    let noVotes = Math.round(_Appeal.ClickersNo.length / all * 10)
 
-            let string;
-            if (yesVotes === 10) string = "<:GREEN1:876413128223621180>" + "<:GREEN2:876413127724523532>".repeat(yesVotes) + "<:GREEN3:876413128164933672>"
-            if (noVotes === 10) string = "<:RED1:876414122714091532>" + "<:RED2:876414122907025448>".repeat(noVotes) + "<:RED3:876414122860904518>"
+    let string;
+    if (yesVotes === 10) string = "<:GREEN1:876413128223621180>" + "<:GREEN2:876413127724523532>".repeat(yesVotes) + "<:GREEN3:876413128164933672>"
+    if (noVotes === 10) string = "<:RED1:876414122714091532>" + "<:RED2:876414122907025448>".repeat(noVotes) + "<:RED3:876414122860904518>"
 
-            if (!string)
-                string = "<:GREEN1:876413128223621180>" + "<:GREEN2:876413127724523532>".repeat(yesVotes) + "<:RED2:876414122907025448>".repeat(noVotes) + "<:RED3:876414122860904518>"
+    if (!string)
+        string = "<:GREEN1:876413128223621180>" + "<:GREEN2:876413127724523532>".repeat(yesVotes) + "<:RED2:876414122907025448>".repeat(noVotes) + "<:RED3:876414122860904518>"
 
-            let embed = interaction.message.embeds[0]
-            //@ts-ignore
-            embed.setDescription(`Progreso de la votación:\n\n \`[${_Appeal.ClickersYes.length}/${all}]\` ${string} \`[${_Appeal.ClickersNo.length}/${all}]\`\n`)
-            //@ts-ignore
-            interaction.message.edit({embeds: [embed]})
+    let embed = interaction.message.embeds[0]
+    //@ts-ignore
+    embed.setDescription(`Progreso de la votación:\n\n \`[${_Appeal.ClickersYes.length}/${all}]\` ${string} \`[${_Appeal.ClickersNo.length}/${all}]\`\n`)
+    //@ts-ignore
+    interaction.message.edit({embeds: [embed]})
+
+    await interaction.user.send({content: `Hola :wave: <@!${interaction.user.id}>\nHas votado **banear** en la apelación de <@!${_Appeal.UserID}>. ¿Puedes argumentar tu voto?\n\`Puedes esperar 5 minutos o decir no para no argumentar\``})
+    const filter = (m: any) => m.content !== "";
+    const collector = interaction.user.dmChannel?.createMessageCollector({filter: filter, max: 1, time: 300000})
+
+    collector?.on("collect", (msg: Message) => {
+        msg.react("830858804236517392")
+        if (msg.content.toLowerCase() == "no") return collector?.stop("no")
+        return collector?.stop(msg.content)
+    })
+    collector?.on("end", (collected: any, reason: any) => {
+        let Embed = new MessageEmbed()
+            .setColor("#ED4245")
+            .setAuthor(`Voto en contra de ${interaction.user.tag}`, `${interaction.user.avatarURL()}`)
+            .setDescription(`Apelación de: <@!${_Appeal.UserID}> (${_Appeal.UserID}) con id: \`${_Appeal.AppealID}\``)
+
+        if(reason == "no" || reason == "time") //@ts-ignore
+            return interaction.guild?.channels.cache.get(process.env.ARGUMENT_CHANNEL_ID).send({embeds: [Embed]})
+
+            Embed.addField("Argumentación: ", reason)
+        //@ts-ignore
+        interaction.guild?.channels.cache.get(process.env.ARGUMENT_CHANNEL_ID).send({embeds: [Embed]})
+    })
 }
 function unbanUser(interaction: ButtonInteraction) {
 

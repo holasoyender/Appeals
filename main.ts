@@ -9,7 +9,6 @@ import mongoose from "mongoose";
 import session from "express-session";
 import { start } from "./bot";
 import index from "./routes/views/index"
-//TODO argumentar el voto negativo
 
 const Store = require("connect-mongo")
 const app = express();
