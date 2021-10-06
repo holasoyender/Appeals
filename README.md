@@ -1,16 +1,26 @@
 # Appeals
 
-Sistema de apelación de baneos permanentes del servidor de **LA CABRA**
+Sistema de apelación de baneos permanentes del servidor de **LA CABRA** usando **MongoDB**
 Para cualquier pregunta/sugerencia siempre podéis abrir una **issue**
+Demo: http://cabrapeals.cluster-0.kirobot.cc/
 
 ## Como usar
 
 1 - Crea una aplicación en Discord y añade el siguiente link a la sección Oauth2:
-```https://<URL>:<PUERTO>/api/auth/discord/redirect```
+```http://<URL>/api/auth/discord/redirect```
 
-2 - Rellena el archivo [.env](https://github.com/holasoyender/Appeals#ejemplo-de-arcivo-env)
+2 - Rellena el archivo [.env](https://github.com/holasoyender/Appeals#ejemplo-de-arcivo-env) o tu hoja de variables de **Heroku/Netlify**
 
-3 - Añade el bot al servidor con los siguientes permisos: `Banear usuarios` y `Mandar mensajes`
+3 - Añade el bot al servidor con los siguientes permisos: `Banear usuarios`, `Crear slash commands` y `Mandar mensajes`.
+URL de ejemplo: ```https://discord.com/api/oauth2/authorize?client_id=<ID-DEL-CLIENTE>&permissions=2147483652&scope=bot%20applications.commands ```
+
+4 - Crea un canal en el que el bot pueda `Mandar mensajes` y `Leer mensajes`
+
+## Comandos disponibles
+
+ - `/appeal <Voto> <ID Apelación>`: Votar en una apelación con la ID
+ - `/block <User>`: Bloquear a un usuario del servicio de apelaciones.
+ - `/unblock <User>`: Desbloquear a un usuario del servicio de apelaciones.
 
 ## Ejemplo de arcivo .env
 ```
@@ -69,3 +79,5 @@ Lista de los administradores del sistema de apelaciones.
 ### ROL_MODERADOR (Rol de Moderador)
 
 La ID del rol con el que los moderadores podrán votar en las apelaciones
+
+
