@@ -406,7 +406,17 @@ async function voteYes(AppealID:any, interaction:ButtonInteraction) {
     //@ts-ignore
     interaction.message.edit({embeds: [embed]})
 
-    await interaction.user.send({content: `Hola :wave: <@!${interaction.user.id}>\nHas votado **desbaneaar** en la apelación de <@!${_Appeal.UserID}>. ¿Puedes argumentar tu voto?\n\`Puedes esperar 5 minutos o decir no para no argumentar\``})
+    try {
+        await interaction.user.send({content: `Hola :wave: <@!${interaction.user.id}>\nHas votado **desbaneaar** en la apelación de <@!${_Appeal.UserID}>. ¿Puedes argumentar tu voto?\n\`Puedes esperar 5 minutos o decir no para no argumentar\``})
+    }catch (e) {
+        let Embed = new MessageEmbed()
+            .setColor("#57F287")
+            .setAuthor(`Voto a favor de ${interaction.user.tag}`, `${interaction.user.avatarURL()}`)
+            .setDescription(`Apelación de: <@!${_Appeal.UserID}> (${_Appeal.UserID}) con id: \`${_Appeal.AppealID}\``)
+//@ts-ignore
+        return interaction.guild?.channels.cache.get(process.env.ARGUMENT_CHANNEL_ID).send({embeds: [Embed]}).catch(()=>{})
+
+    }
     const filter = (m: any) => m.content !== "";
     const collector = interaction.user.dmChannel?.createMessageCollector({filter: filter, max: 1, time: 300000})
 
@@ -469,7 +479,16 @@ async function voteNo(AppealID:any, interaction:ButtonInteraction) {
     //@ts-ignore
     interaction.message.edit({embeds: [embed]})
 
-    await interaction.user.send({content: `Hola :wave: <@!${interaction.user.id}>\nHas votado **banear** en la apelación de <@!${_Appeal.UserID}>. ¿Puedes argumentar tu voto?\n\`Puedes esperar 5 minutos o decir no para no argumentar\``})
+    try {
+        await interaction.user.send({content: `Hola :wave: <@!${interaction.user.id}>\nHas votado **banear** en la apelación de <@!${_Appeal.UserID}>. ¿Puedes argumentar tu voto?\n\`Puedes esperar 5 minutos o decir no para no argumentar\``})
+    }catch (e) {
+        let Embed = new MessageEmbed()
+            .setColor("#ED4245")
+            .setAuthor(`Voto en contra de ${interaction.user.tag}`, `${interaction.user.avatarURL()}`)
+            .setDescription(`Apelación de: <@!${_Appeal.UserID}> (${_Appeal.UserID}) con id: \`${_Appeal.AppealID}\``)
+        //@ts-ignore
+        return interaction.guild?.channels.cache.get(process.env.ARGUMENT_CHANNEL_ID).send({embeds: [Embed]}).catch(()=>{})
+    }
     const filter = (m: any) => m.content !== "";
     const collector = interaction.user.dmChannel?.createMessageCollector({filter: filter, max: 1, time: 300000})
 
