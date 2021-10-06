@@ -41,7 +41,7 @@ const rest = new REST({ version: '9' }).setToken(process.env.BOT_TOKEN);
 })();
 
 client.on("ready", () => {
-    client.user?.setPresence({status: 'online', activities: [{name: "lacabra.app", type: "WATCHING"}]});
+    client.user?.setPresence({status: 'invisible', activities: [{name: "lacabra.app", type: "WATCHING"}]});
     console.log(`Bot iniciado como ${client.user?.username}!`)
 });
 

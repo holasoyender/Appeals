@@ -7,7 +7,6 @@ import router from "./routes";
 import "./strategies/discord";
 import mongoose from "mongoose";
 import session from "express-session";
-import * as path from "path";
 import { start } from "./bot";
 import index from "./routes/views/index"
 //TODO argumentar el voto negativo
