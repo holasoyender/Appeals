@@ -109,7 +109,7 @@ client.on("interactionCreate", async (interaction) => {
                         _Appeal.ClickersYes = _Appeal.ClickersYes.filter((item: any) => item !== interaction.user.id)
                     }
                     await interaction.reply({
-                        content: `<:success:830860492112265217>  Has votado **banear** al usuario <@!${_Appeal.UserID}>.`,
+                        content: `<:new_tick:761805839715008553>  Has votado **banear** al usuario <@!${_Appeal.UserID}>.`,
                         ephemeral: true
                     });
                     _Appeal.ClickersNo.push(interaction.user.id)
@@ -171,7 +171,7 @@ client.on("interactionCreate", async (interaction) => {
                     }
 
                     await interaction.reply({
-                        content: `<:success:830860492112265217>  Has votado **desbanear** al usuario <@!${_Appeal.UserID}>.`,
+                        content: `<:new_tick:761805839715008553>  Has votado **desbanear** al usuario <@!${_Appeal.UserID}>.`,
                         ephemeral: true
                     });
                     _Appeal.ClickersYes.push(interaction.user.id)
@@ -237,7 +237,7 @@ client.on("interactionCreate", async (interaction) => {
                         ID: interaction.options.data[0].user?.id
                     }).save().then(doc => {
                         return interaction.reply({
-                            content: `<:operational:830858804236517392>  El usuario **${interaction.options.data[0].user?.tag}** ha sido bloqueado.`,
+                            content: `<:new_tick:761805839715008553>  El usuario **${interaction.options.data[0].user?.tag}** ha sido bloqueado.`,
                         }).catch(e => {
                             console.log(e)
                             return interaction.reply({
@@ -266,7 +266,7 @@ client.on("interactionCreate", async (interaction) => {
 
                     res.delete();
                     return interaction.reply({
-                        content: `<:operational:830858804236517392>  El usuario **${interaction.options.data[0].user?.tag}** ha sido desbloqueado.`,
+                        content: `<:new_tick:761805839715008553>  El usuario **${interaction.options.data[0].user?.tag}** ha sido desbloqueado.`,
                     })
                 })
                 break;
@@ -383,7 +383,7 @@ async function voteYes(AppealID: any, interaction: ButtonInteraction) {
     }
 
     await interaction.reply({
-        content: `<:success:830860492112265217>  Has votado **desbanear** al usuario <@!${_Appeal.UserID}>.`,
+        content: `<:new_tick:761805839715008553>  Has votado **desbanear** al usuario <@!${_Appeal.UserID}>.`,
         ephemeral: true
     });
     _Appeal.ClickersYes.push(interaction.user.id)
@@ -456,7 +456,7 @@ async function voteNo(AppealID: any, interaction: ButtonInteraction) {
         _Appeal.ClickersYes = _Appeal.ClickersYes.filter((item: any) => item !== interaction.user.id)
     }
     await interaction.reply({
-        content: `<:success:830860492112265217>  Has votado **banear** al usuario <@!${_Appeal.UserID}>.`,
+        content: `<:new_tick:761805839715008553>  Has votado **banear** al usuario <@!${_Appeal.UserID}>.`,
         ephemeral: true
     });
     _Appeal.ClickersNo.push(interaction.user.id)
@@ -562,7 +562,7 @@ function unbanUser(interaction: ButtonInteraction) {
         try {
             interaction.guild?.bans.remove(res.UserID, "Apelación aprobada").catch(e => { })
             return interaction.reply({
-                content: "<:operational:830858804236517392>  El usuario ha sido **desbaneado**",
+                content: "<:new_tick:761805839715008553>  El usuario ha sido **desbaneado**",
                 ephemeral: true
             })
         } catch (e) {
@@ -620,7 +620,7 @@ function banUser(interaction: ButtonInteraction) {
         interaction.message.edit({ components: [new MessageActionRow().addComponents(_voteYesButton, _voteNoButton, _endButton)], embeds: [embed] }).catch(e => { })
 
         return interaction.reply({
-            content: "<:operational:830858804236517392>  El usuario **no** ha sido desbaneado",
+            content: "<:new_tick:761805839715008553>  El usuario **no** ha sido desbaneado",
             ephemeral: true
         })
     })
