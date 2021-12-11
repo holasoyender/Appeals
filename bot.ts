@@ -237,7 +237,7 @@ client.on("interactionCreate", async (interaction) => {
                         ID: interaction.options.data[0].user?.id
                     }).save().then(doc => {
                         return interaction.reply({
-                            content: `<:tick2:778321510637109289>  El usuario **${interaction.options.data[0].user?.tag}** ha sido bloqueado.`,
+                            content: `<:operational:830858804236517392>  El usuario **${interaction.options.data[0].user?.tag}** ha sido bloqueado.`,
                         }).catch(e => {
                             console.log(e)
                             return interaction.reply({
@@ -266,7 +266,7 @@ client.on("interactionCreate", async (interaction) => {
 
                     res.delete();
                     return interaction.reply({
-                        content: `<:tick2:778321510637109289>  El usuario **${interaction.options.data[0].user?.tag}** ha sido desbloqueado.`,
+                        content: `<:operational:830858804236517392>  El usuario **${interaction.options.data[0].user?.tag}** ha sido desbloqueado.`,
                     })
                 })
                 break;
