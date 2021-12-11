@@ -27,7 +27,8 @@ if(process.env.CLIENT_ID && process.env.CLIENT_SECRET) {
     }, async (accessToken: string, refreshToken: string, profile: Profile, done: any) => {
 
         try {
-            const {id, username, discriminator, avatar} = profile;
+            let {id, username, discriminator, avatar} = profile;
+            if(!avatar || avatar == "") avatar = "https://cdn.discordapp.com/embed/avatars/0.png";
 
             let user = await User.findOneAndUpdate({
                 ID: id
