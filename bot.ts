@@ -562,7 +562,7 @@ function unbanUser(interaction: ButtonInteraction) {
         try {
             interaction.guild?.bans.remove(res.UserID, "Apelación aprobada").catch(e => { })
             return interaction.reply({
-                content: "<:tick2:778321510637109289>  El usuario ha sido **desbaneado**",
+                content: "<:operational:830858804236517392>  El usuario ha sido **desbaneado**",
                 ephemeral: true
             })
         } catch (e) {
@@ -620,7 +620,7 @@ function banUser(interaction: ButtonInteraction) {
         interaction.message.edit({ components: [new MessageActionRow().addComponents(_voteYesButton, _voteNoButton, _endButton)], embeds: [embed] }).catch(e => { })
 
         return interaction.reply({
-            content: "<:tick2:778321510637109289>  El usuario **no** ha sido desbaneado",
+            content: "<:operational:830858804236517392>  El usuario **no** ha sido desbaneado",
             ephemeral: true
         })
     })
