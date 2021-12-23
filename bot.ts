@@ -287,6 +287,20 @@ export async function checkBans(userId: any) {
         return false
     }
 }
+
+export async function getBanByUserID(userId: any) {
+    // @ts-ignore
+    let guild = client.guilds.cache.get(process.env.GUILD_ID);
+    if (!guild) return false
+    try {
+        let bans = await guild.bans.fetch();
+        return bans.get(userId) || false
+    } catch (e) {
+        console.log("No tengo permisos para ver los bans del servidor!")
+        return false
+    }
+}
+
 export async function sendAppealEmbed(user: any, _appeal: any) {
 
     // @ts-ignore
@@ -569,7 +583,7 @@ function unbanUser(interaction: ButtonInteraction) {
             interaction.reply({
                 content: ":no_entry_sign:  Ha ocurrido un error, por favor, comprueba la consola",
                 ephemeral: true
-            })
+            });
             return console.log(e)
         }
     })
