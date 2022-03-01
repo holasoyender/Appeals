@@ -11,6 +11,7 @@ import { Routes } from "discord-api-types/v9";
 import commands from "./commands";
 import Blocked from "./database/Blocked";
 import mongoose from "mongoose";
+import config from "./config";
 
 const client = new Client({
     intents: ["GUILDS", "GUILD_BANS", "DIRECT_MESSAGES"]
@@ -41,7 +42,8 @@ const rest = new REST({ version: '9' }).setToken(process.env.BOT_TOKEN);
 })();
 
 client.on("ready", () => {
-    client.user?.setPresence({ status: 'invisible', activities: [{ name: "lacabra.app", type: "WATCHING" }] });
+    // @ts-ignore
+    client.user?.setPresence({ status: 'invisible', activities: [{ name: config.bot_status.message, type: config.bot_status.type }] });
     console.log(`Bot iniciado como ${client.user?.username}!`)
 });
 
@@ -64,7 +66,7 @@ client.on("interactionCreate", async (interaction) => {
         if (args[1] === "end") {
 
             if (!process.env.ADMINISTRADORES?.split(",").includes(interaction.user.id)) return interaction.reply({
-                content: `<:new_aviso:761805859100688394>  No puedes terminar esta votación.`,
+                content: `:no_entry_sign:  No puedes terminar esta votación.`,
                 ephemeral: true
             });
 
@@ -101,7 +103,7 @@ client.on("interactionCreate", async (interaction) => {
                     })
 
                     if (_Appeal.ClickersNo.includes(interaction.user.id)) return interaction.reply({
-                        content: `<:new_aviso:761805859100688394>  Ya has votado **banear** al usuario <@!${_Appeal.UserID}>.`,
+                        content: `:no_entry_sign:  Ya has votado **banear** al usuario <@!${_Appeal.UserID}>.`,
                         ephemeral: true
                     });
 
@@ -109,7 +111,7 @@ client.on("interactionCreate", async (interaction) => {
                         _Appeal.ClickersYes = _Appeal.ClickersYes.filter((item: any) => item !== interaction.user.id)
                     }
                     await interaction.reply({
-                        content: `<:new_tick:761805839715008553>  Has votado **banear** al usuario <@!${_Appeal.UserID}>.`,
+                        content: `✅  Has votado **banear** al usuario <@!${_Appeal.UserID}>.`,
                         ephemeral: true
                     });
                     _Appeal.ClickersNo.push(interaction.user.id)
@@ -120,11 +122,11 @@ client.on("interactionCreate", async (interaction) => {
                     let noVotes = Math.round(_Appeal.ClickersNo.length / all * 10)
 
                     let string;
-                    if (yesVotes === 10) string = "<:GREEN1:876413128223621180>" + "<:GREEN2:876413127724523532>".repeat(yesVotes) + "<:GREEN3:876413128164933672>"
-                    if (noVotes === 10) string = "<:RED1:876414122714091532>" + "<:RED2:876414122907025448>".repeat(noVotes) + "<:RED3:876414122860904518>"
+                    if (yesVotes === 10) string = config.emojis.green_left + config.emojis.green_center.repeat(yesVotes) + config.emojis.green_right
+                    if (noVotes === 10) string = config.emojis.red_left + config.emojis.red_center.repeat(noVotes) + config.emojis.red_right
 
                     if (!string)
-                        string = "<:GREEN1:876413128223621180>" + "<:GREEN2:876413127724523532>".repeat(yesVotes) + "<:RED2:876414122907025448>".repeat(noVotes) + "<:RED3:876414122860904518>"
+                        string = config.emojis.green_left + config.emojis.green_center.repeat(yesVotes) + config.emojis.red_center.repeat(noVotes) + config.emojis.red_right
 
                     // @ts-ignore
                     let channel = interaction.guild?.channels.cache.get(process.env.CHANNEL_ID)
@@ -162,7 +164,7 @@ client.on("interactionCreate", async (interaction) => {
                     })
 
                     if (_Appeal.ClickersYes.includes(interaction.user.id)) return interaction.reply({
-                        content: `<:new_aviso:761805859100688394>  Ya has votado **desbanear** al usuario <@!${_Appeal.UserID}>.`,
+                        content: `:no_entry_sign:  Ya has votado **desbanear** al usuario <@!${_Appeal.UserID}>.`,
                         ephemeral: true
                     });
 
@@ -171,7 +173,7 @@ client.on("interactionCreate", async (interaction) => {
                     }
 
                     await interaction.reply({
-                        content: `<:new_tick:761805839715008553>  Has votado **desbanear** al usuario <@!${_Appeal.UserID}>.`,
+                        content: `✅  Has votado **desbanear** al usuario <@!${_Appeal.UserID}>.`,
                         ephemeral: true
                     });
                     _Appeal.ClickersYes.push(interaction.user.id)
@@ -182,11 +184,11 @@ client.on("interactionCreate", async (interaction) => {
                     let noVotes = Math.round(_Appeal.ClickersNo.length / all * 10)
 
                     let string;
-                    if (yesVotes === 10) string = "<:GREEN1:876413128223621180>" + "<:GREEN2:876413127724523532>".repeat(yesVotes) + "<:GREEN3:876413128164933672>"
-                    if (noVotes === 10) string = "<:RED1:876414122714091532>" + "<:RED2:876414122907025448>".repeat(noVotes) + "<:RED3:876414122860904518>"
+                    if (yesVotes === 10) string = config.emojis.green_left + config.emojis.green_center.repeat(yesVotes) + config.emojis.green_right
+                    if (noVotes === 10) string = config.emojis.red_left + config.emojis.red_center.repeat(noVotes) + config.emojis.red_right
 
                     if (!string)
-                        string = "<:GREEN1:876413128223621180>" + "<:GREEN2:876413127724523532>".repeat(yesVotes) + "<:RED2:876414122907025448>".repeat(noVotes) + "<:RED3:876414122860904518>"
+                        string = config.emojis.green_left + config.emojis.green_center.repeat(yesVotes) + config.emojis.red_center.repeat(noVotes) + config.emojis.red_right
 
                     // @ts-ignore
                     let channel = interaction.guild?.channels.cache.get(process.env.CHANNEL_ID)
@@ -235,9 +237,9 @@ client.on("interactionCreate", async (interaction) => {
                     new Blocked({
                         _id: new mongoose.Types.ObjectId(),
                         ID: interaction.options.data[0].user?.id
-                    }).save().then(doc => {
+                    }).save().then(() => {
                         return interaction.reply({
-                            content: `<:new_tick:761805839715008553>  El usuario **${interaction.options.data[0].user?.tag}** ha sido bloqueado.`,
+                            content: `✅  El usuario **${interaction.options.data[0].user?.tag}** ha sido bloqueado.`,
                         }).catch(e => {
                             console.log(e)
                             return interaction.reply({
@@ -266,7 +268,7 @@ client.on("interactionCreate", async (interaction) => {
 
                     res.delete();
                     return interaction.reply({
-                        content: `<:new_tick:761805839715008553>  El usuario **${interaction.options.data[0].user?.tag}** ha sido desbloqueado.`,
+                        content: `✅  El usuario **${interaction.options.data[0].user?.tag}** ha sido desbloqueado.`,
                     })
                 })
                 break;
@@ -325,35 +327,40 @@ export async function sendAppealEmbed(user: any, _appeal: any) {
     } else {
         reason = reason.split(" Baneado por: ")[0] || "Sin razón"
     }
-    let progress = "<:GRIS2:889925177788485702>".repeat(10)
+    let progress = config.emojis.grey_center.repeat(10)
+
+    let avatar;
+    if (user.Avatar !== "https://cdn.discordapp.com/embed/avatars/0.png")
+        avatar = `https://cdn.discordapp.com/avatars/${user.ID}/${user.Avatar}.webp`
+    else
+        avatar = "https://cdn.discordapp.com/embed/avatars/0.png"
 
     let embed = new MessageEmbed()
         .setColor("#2cfff7")
-        .setAuthor("¡ Nueva apelación recibida !", "https://cdn.discordapp.com/attachments/810800509719019532/889905025290240080/avatar.png", "https://www.lacabra.app/")
-        .setThumbnail(`https://cdn.discordapp.com/avatars/${user.ID}/${user.Avatar}.webp`)
+        .setAuthor({ name: "¡ Nueva apelación recibida !", iconURL: config.img.main_icon, url: config.links.website})
+        .setThumbnail(avatar)
         .addField("Información del usuario:", `- Usuario: <@!${user.ID}>\n- Nombre: \`${user.Tag}\`\n- ID: \`${user.ID}\`\n\n- ID del caso: \`${appeal.AppealID}\`\n- Razón del baneo: \`${reason}\`\n- Moderador: \`${mod}\``, false)
         .addField("¿Por qué has sido baneado?", appeal.banReason, false)
         .addField("¿Por qué crees que deberíamos levantarte el ban?", appeal.appealText, false)
         .addField("¿Qué harás para evitar ser baneado en el futuro?", appeal.futureActions, false)
 
-        .setDescription(`Progreso de la votación:\n\n \`[0/0]\`<:GRIS1:889925177754918972>${progress}<:GRIS3:889925177733943346> \`[0/0]\`\n`)
+        .setDescription(`Progreso de la votación:\n\n \`[0/0]\`${config.emojis.grey_left}${progress}${config.emojis.grey_right} \`[0/0]\`\n`)
 
     let voteYesButton = new MessageButton()
         .setStyle("SUCCESS")
         .setLabel("Desbanear")
-        .setEmoji("771838935730094090")
+        .setEmoji(config.emojis.unban)
         .setCustomId(`btn-yes-${appeal.AppealID}`)
 
     let voteNoButton = new MessageButton()
         .setStyle("DANGER")
         .setLabel("Banear")
-        .setEmoji("771838918084657164")
+        .setEmoji(config.emojis.ban)
         .setCustomId(`btn-no-${appeal.AppealID}`)
 
     let endButton = new MessageButton()
         .setStyle("PRIMARY")
         .setLabel("Terminar votación")
-        .setEmoji("876195233271005184")
         .setCustomId(`btn-end-${appeal.AppealID}`)
     try {
         //@ts-ignore
@@ -388,7 +395,7 @@ async function voteYes(AppealID: any, interaction: ButtonInteraction) {
     })
 
     if (_Appeal.ClickersYes.includes(interaction.user.id)) return interaction.reply({
-        content: `<:new_aviso:761805859100688394>  Ya has votado **desbanear** al usuario <@!${_Appeal.UserID}>.`,
+        content: `:no_entry_sign:  Ya has votado **desbanear** al usuario <@!${_Appeal.UserID}>.`,
         ephemeral: true
     });
 
@@ -397,7 +404,7 @@ async function voteYes(AppealID: any, interaction: ButtonInteraction) {
     }
 
     await interaction.reply({
-        content: `<:new_tick:761805839715008553>  Has votado **desbanear** al usuario <@!${_Appeal.UserID}>.`,
+        content: `✅  Has votado **desbanear** al usuario <@!${_Appeal.UserID}>.`,
         ephemeral: true
     });
     _Appeal.ClickersYes.push(interaction.user.id)
@@ -408,11 +415,11 @@ async function voteYes(AppealID: any, interaction: ButtonInteraction) {
     let noVotes = Math.round(_Appeal.ClickersNo.length / all * 10)
 
     let string;
-    if (yesVotes === 10) string = "<:GREEN1:876413128223621180>" + "<:GREEN2:876413127724523532>".repeat(yesVotes) + "<:GREEN3:876413128164933672>"
-    if (noVotes === 10) string = "<:RED1:876414122714091532>" + "<:RED2:876414122907025448>".repeat(noVotes) + "<:RED3:876414122860904518>"
+    if (yesVotes === 10) string = config.emojis.green_left + config.emojis.green_center.repeat(yesVotes) + config.emojis.green_right
+    if (noVotes === 10) string = config.emojis.red_left + config.emojis.red_center.repeat(noVotes) + config.emojis.red_right
 
     if (!string)
-        string = "<:GREEN1:876413128223621180>" + "<:GREEN2:876413127724523532>".repeat(yesVotes) + "<:RED2:876414122907025448>".repeat(noVotes) + "<:RED3:876414122860904518>"
+        string = config.emojis.green_left + config.emojis.green_center.repeat(yesVotes) + config.emojis.red_center.repeat(noVotes) + config.emojis.red_right
 
     let embed = interaction.message.embeds[0]
     //@ts-ignore
@@ -420,38 +427,42 @@ async function voteYes(AppealID: any, interaction: ButtonInteraction) {
     //@ts-ignore
     interaction.message.edit({ embeds: [embed] })
 
-    try {
-        await interaction.user.send({ content: `Hola :wave: <@!${interaction.user.id}>\nHas votado **desbaneaar** en la apelación de <@!${_Appeal.UserID}>. ¿Puedes argumentar tu voto?\n\`Puedes esperar 5 minutos o decir no para no argumentar\`` })
-    } catch (e) {
-        let Embed = new MessageEmbed()
-            .setColor("#57F287")
-            .setAuthor(`Voto a favor de ${interaction.user.tag}`, `${interaction.user.avatarURL()}`)
-            .setDescription(`Apelación de: <@!${_Appeal.UserID}> (${_Appeal.UserID}) con id: \`${_Appeal.AppealID}\``)
-        //@ts-ignore
-        return interaction.guild?.channels.cache.get(process.env.ARGUMENT_CHANNEL_ID).send({ embeds: [Embed] }).catch(() => { })
+    if(config.argument_vote) {
+        try {
+            await interaction.user.send({content: `Hola :wave: <@!${interaction.user.id}>\nHas votado **desbaneaar** en la apelación de <@!${_Appeal.UserID}>. ¿Puedes argumentar tu voto?\n\`Puedes esperar 5 minutos o decir no para no argumentar\``})
+        } catch (e) {
+            let Embed = new MessageEmbed()
+                .setColor("#57F287")
+                .setAuthor({ name: `Voto a favor de ${interaction.user.tag}`, iconURL: `${interaction.user.avatarURL()}`})
+                .setDescription(`Apelación de: <@!${_Appeal.UserID}> (${_Appeal.UserID}) con id: \`${_Appeal.AppealID}\``)
+            //@ts-ignore
+            return interaction.guild?.channels.cache.get(process.env.ARGUMENT_CHANNEL_ID).send({embeds: [Embed]}).catch(() => {
+            })
 
+        }
+        const filter = (m: any) => m.content !== "";
+        const collector = interaction.user.dmChannel?.createMessageCollector({filter: filter, max: 1, time: 300000})
+
+        collector?.on("collect", (msg: Message) => {
+            if(msg.author.bot) return;
+            msg.react("✅")
+            if (msg.content.toLowerCase() == "no") return collector?.stop("no")
+            return collector?.stop(msg.content)
+        })
+        collector?.on("end", (collected: any, reason: any) => {
+            let Embed = new MessageEmbed()
+                .setColor("#57F287")
+                .setAuthor({ name: `Voto a favor de ${interaction.user.tag}`, iconURL: `${interaction.user.avatarURL()}`})
+                .setDescription(`Apelación de: <@!${_Appeal.UserID}> (${_Appeal.UserID}) con id: \`${_Appeal.AppealID}\``)
+
+            if (reason == "no" || reason == "time") //@ts-ignore
+                return interaction.guild?.channels.cache.get(process.env.ARGUMENT_CHANNEL_ID).send({embeds: [Embed]})
+
+            Embed.addField("Argumentación: ", reason)
+            //@ts-ignore
+            interaction.guild?.channels.cache.get(process.env.ARGUMENT_CHANNEL_ID).send({embeds: [Embed]})
+        })
     }
-    const filter = (m: any) => m.content !== "";
-    const collector = interaction.user.dmChannel?.createMessageCollector({ filter: filter, max: 1, time: 300000 })
-
-    collector?.on("collect", (msg: Message) => {
-        msg.react("830858804236517392")
-        if (msg.content.toLowerCase() == "no") return collector?.stop("no")
-        return collector?.stop(msg.content)
-    })
-    collector?.on("end", (collected: any, reason: any) => {
-        let Embed = new MessageEmbed()
-            .setColor("#57F287")
-            .setAuthor(`Voto a favor de ${interaction.user.tag}`, `${interaction.user.avatarURL()}`)
-            .setDescription(`Apelación de: <@!${_Appeal.UserID}> (${_Appeal.UserID}) con id: \`${_Appeal.AppealID}\``)
-
-        if (reason == "no" || reason == "time") //@ts-ignore
-            return interaction.guild?.channels.cache.get(process.env.ARGUMENT_CHANNEL_ID).send({ embeds: [Embed] })
-
-        Embed.addField("Argumentación: ", reason)
-        //@ts-ignore
-        interaction.guild?.channels.cache.get(process.env.ARGUMENT_CHANNEL_ID).send({ embeds: [Embed] })
-    })
 }
 async function voteNo(AppealID: any, interaction: ButtonInteraction) {
 
@@ -462,7 +473,7 @@ async function voteNo(AppealID: any, interaction: ButtonInteraction) {
     })
 
     if (_Appeal.ClickersNo.includes(interaction.user.id)) return interaction.reply({
-        content: `<:new_aviso:761805859100688394>  Ya has votado **banear** al usuario <@!${_Appeal.UserID}>.`,
+        content: `:no_entry_sign:  Ya has votado **banear** al usuario <@!${_Appeal.UserID}>.`,
         ephemeral: true
     });
 
@@ -470,7 +481,7 @@ async function voteNo(AppealID: any, interaction: ButtonInteraction) {
         _Appeal.ClickersYes = _Appeal.ClickersYes.filter((item: any) => item !== interaction.user.id)
     }
     await interaction.reply({
-        content: `<:new_tick:761805839715008553>  Has votado **banear** al usuario <@!${_Appeal.UserID}>.`,
+        content: `✅  Has votado **banear** al usuario <@!${_Appeal.UserID}>.`,
         ephemeral: true
     });
     _Appeal.ClickersNo.push(interaction.user.id)
@@ -481,11 +492,11 @@ async function voteNo(AppealID: any, interaction: ButtonInteraction) {
     let noVotes = Math.round(_Appeal.ClickersNo.length / all * 10)
 
     let string;
-    if (yesVotes === 10) string = "<:GREEN1:876413128223621180>" + "<:GREEN2:876413127724523532>".repeat(yesVotes) + "<:GREEN3:876413128164933672>"
-    if (noVotes === 10) string = "<:RED1:876414122714091532>" + "<:RED2:876414122907025448>".repeat(noVotes) + "<:RED3:876414122860904518>"
+    if (yesVotes === 10) string = config.emojis.green_left + config.emojis.green_center.repeat(yesVotes) + config.emojis.green_right
+    if (noVotes === 10) string = config.emojis.red_left + config.emojis.red_center.repeat(noVotes) + config.emojis.red_right
 
     if (!string)
-        string = "<:GREEN1:876413128223621180>" + "<:GREEN2:876413127724523532>".repeat(yesVotes) + "<:RED2:876414122907025448>".repeat(noVotes) + "<:RED3:876414122860904518>"
+        string = config.emojis.green_left + config.emojis.green_center.repeat(yesVotes) + config.emojis.red_center.repeat(noVotes) + config.emojis.red_right
 
     let embed = interaction.message.embeds[0]
     //@ts-ignore
@@ -493,37 +504,41 @@ async function voteNo(AppealID: any, interaction: ButtonInteraction) {
     //@ts-ignore
     interaction.message.edit({ embeds: [embed] })
 
-    try {
-        await interaction.user.send({ content: `Hola :wave: <@!${interaction.user.id}>\nHas votado **banear** en la apelación de <@!${_Appeal.UserID}>. ¿Puedes argumentar tu voto?\n\`Puedes esperar 5 minutos o decir no para no argumentar\`` })
-    } catch (e) {
-        let Embed = new MessageEmbed()
-            .setColor("#ED4245")
-            .setAuthor(`Voto en contra de ${interaction.user.tag}`, `${interaction.user.avatarURL()}`)
-            .setDescription(`Apelación de: <@!${_Appeal.UserID}> (${_Appeal.UserID}) con id: \`${_Appeal.AppealID}\``)
-        //@ts-ignore
-        return interaction.guild?.channels.cache.get(process.env.ARGUMENT_CHANNEL_ID).send({ embeds: [Embed] }).catch(() => { })
+    if(config.argument_vote) {
+        try {
+            await interaction.user.send({content: `Hola :wave: <@!${interaction.user.id}>\nHas votado **banear** en la apelación de <@!${_Appeal.UserID}>. ¿Puedes argumentar tu voto?\n\`Puedes esperar 5 minutos o decir no para no argumentar\``})
+        } catch (e) {
+            let Embed = new MessageEmbed()
+                .setColor("#ED4245")
+                .setAuthor({ name: `Voto en contra de ${interaction.user.tag}`, iconURL: `${interaction.user.avatarURL()}`})
+                .setDescription(`Apelación de: <@!${_Appeal.UserID}> (${_Appeal.UserID}) con id: \`${_Appeal.AppealID}\``)
+            //@ts-ignore
+            return interaction.guild?.channels.cache.get(process.env.ARGUMENT_CHANNEL_ID).send({embeds: [Embed]}).catch(() => {
+            })
+        }
+        const filter = (m: any) => m.content !== "";
+        const collector = interaction.user.dmChannel?.createMessageCollector({filter: filter, max: 1, time: 300000})
+
+        collector?.on("collect", (msg: Message) => {
+            if(msg.author.bot) return;
+            msg.react("✅")
+            if (msg.content.toLowerCase() == "no") return collector?.stop("no")
+            return collector?.stop(msg.content)
+        })
+        collector?.on("end", (collected: any, reason: any) => {
+            let Embed = new MessageEmbed()
+                .setColor("#ED4245")
+                .setAuthor({ name: `Voto en contra de ${interaction.user.tag}`, iconURL:  `${interaction.user.avatarURL()}` })
+                .setDescription(`Apelación de: <@!${_Appeal.UserID}> (${_Appeal.UserID}) con id: \`${_Appeal.AppealID}\``)
+
+            if (reason == "no" || reason == "time") //@ts-ignore
+                return interaction.guild?.channels.cache.get(process.env.ARGUMENT_CHANNEL_ID).send({embeds: [Embed]})
+
+            Embed.addField("Argumentación: ", reason)
+            //@ts-ignore
+            interaction.guild?.channels.cache.get(process.env.ARGUMENT_CHANNEL_ID).send({embeds: [Embed]})
+        })
     }
-    const filter = (m: any) => m.content !== "";
-    const collector = interaction.user.dmChannel?.createMessageCollector({ filter: filter, max: 1, time: 300000 })
-
-    collector?.on("collect", (msg: Message) => {
-        msg.react("830858804236517392")
-        if (msg.content.toLowerCase() == "no") return collector?.stop("no")
-        return collector?.stop(msg.content)
-    })
-    collector?.on("end", (collected: any, reason: any) => {
-        let Embed = new MessageEmbed()
-            .setColor("#ED4245")
-            .setAuthor(`Voto en contra de ${interaction.user.tag}`, `${interaction.user.avatarURL()}`)
-            .setDescription(`Apelación de: <@!${_Appeal.UserID}> (${_Appeal.UserID}) con id: \`${_Appeal.AppealID}\``)
-
-        if (reason == "no" || reason == "time") //@ts-ignore
-            return interaction.guild?.channels.cache.get(process.env.ARGUMENT_CHANNEL_ID).send({ embeds: [Embed] })
-
-        Embed.addField("Argumentación: ", reason)
-        //@ts-ignore
-        interaction.guild?.channels.cache.get(process.env.ARGUMENT_CHANNEL_ID).send({ embeds: [Embed] })
-    })
 }
 function unbanUser(interaction: ButtonInteraction) {
 
@@ -544,39 +559,38 @@ function unbanUser(interaction: ButtonInteraction) {
         let _voteYesButton = new MessageButton()
             .setStyle("SUCCESS")
             .setLabel("Desbanear")
-            .setEmoji("771838935730094090")
+            .setEmoji(config.emojis.unban)
             .setDisabled(true)
             .setCustomId(`btn-yes-${res.AppealID}`)
 
         let _voteNoButton = new MessageButton()
             .setStyle("DANGER")
             .setLabel("Banear")
-            .setEmoji("771838918084657164")
+            .setEmoji(config.emojis.ban)
             .setDisabled(true)
             .setCustomId(`btn-no-${res.AppealID}`)
 
         let _endButton = new MessageButton()
             .setStyle("PRIMARY")
-            .setLabel("Terminar votación")
-            .setEmoji("876195233271005184")
+            .setLabel("Votación finalizada")
             .setDisabled(true)
             .setCustomId(`btn-end-${res.AppealID}`)
 
         let embed = interaction.message.embeds[0]
         //@ts-ignore
-        embed.setColor("#57F287").setAuthor("Usuario desbaneado", "https://cdn.discordapp.com/attachments/810800509719019532/889905025290240080/avatar.png", "https://www.lacabra.app/")
+        embed.setColor("#57F287").setAuthor({ name: "Usuario desbaneado", iconURL: config.img.main_icon, url: config.links.website})
 
         //@ts-ignore
         interaction.message.edit({
             components: [new MessageActionRow().addComponents(_voteYesButton, _voteNoButton, _endButton)],
             embeds: [embed]
-        }).catch((e: any) => {
+        }).catch(() => {
         })
 
         try {
-            interaction.guild?.bans.remove(res.UserID, "Apelación aprobada").catch(e => { })
+            interaction.guild?.bans.remove(res.UserID, "Apelación aprobada").catch(() => { })
             return interaction.reply({
-                content: "<:new_tick:761805839715008553>  El usuario ha sido **desbaneado**",
+                content: "✅  El usuario ha sido **desbaneado**",
                 ephemeral: true
             })
         } catch (e) {
@@ -608,33 +622,32 @@ function banUser(interaction: ButtonInteraction) {
         let _voteYesButton = new MessageButton()
             .setStyle("SUCCESS")
             .setLabel("Desbanear")
-            .setEmoji("771838935730094090")
+            .setEmoji(config.emojis.unban)
             .setDisabled(true)
             .setCustomId(`btn-yes-${res.AppealID}`)
 
         let _voteNoButton = new MessageButton()
             .setStyle("DANGER")
             .setLabel("Banear")
-            .setEmoji("771838918084657164")
+            .setEmoji(config.emojis.ban)
             .setDisabled(true)
             .setCustomId(`btn-no-${res.AppealID}`)
 
         let _endButton = new MessageButton()
             .setStyle("PRIMARY")
-            .setLabel("Terminar votación")
-            .setEmoji("876195233271005184")
+            .setLabel("Votación finalizada")
             .setDisabled(true)
             .setCustomId(`btn-end-${res.AppealID}`)
 
         let embed = interaction.message.embeds[0]
         //@ts-ignore
-        embed.setColor("#ED4245").setAuthor("Usuario no desbaneado", "https://cdn.discordapp.com/attachments/810800509719019532/889905025290240080/avatar.png", "https://www.lacabra.app/")
+        embed.setColor("#ED4245").setAuthor({ name: "Usuario no desbaneado", iconURL: config.img.main_icon, url: config.links.website})
 
         //@ts-ignore
-        interaction.message.edit({ components: [new MessageActionRow().addComponents(_voteYesButton, _voteNoButton, _endButton)], embeds: [embed] }).catch(e => { })
+        interaction.message.edit({ components: [new MessageActionRow().addComponents(_voteYesButton, _voteNoButton, _endButton)], embeds: [embed] }).catch(() => { })
 
         return interaction.reply({
-            content: "<:new_tick:761805839715008553>  El usuario **no** ha sido desbaneado",
+            content: "✅  El usuario **no** ha sido desbaneado",
             ephemeral: true
         })
     })

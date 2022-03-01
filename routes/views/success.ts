@@ -1,14 +1,16 @@
+import config from "../../config";
+
 export default `
 <!DOCTYPE html>
 <html lang="en" class="h-100">
     <head>
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-
+         <link data-n-head="ssr" rel="icon" type="image/png" sizes="512x512" href="${config.img.main_icon}">
         <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" integrity="sha384-JcKb8q3iqJ61gNV9KGb8thSsNjpSL0n8PARn9HuZOnIxN0hoP+VmmDGMN5t9UJ0Z" crossorigin="anonymous">
         <link href="https://fonts.googleapis.com/css2?family=Fira+Sans&display=swap" rel="stylesheet">
 
-        <meta http-equiv="refresh" content="4; url='https://lacabra.app'" />
+        <meta http-equiv="refresh" content="4; url='${config.links.website}'" />
         <title>¡Hecho!</title>
     </head>
     <body class="d-flex h-100 justify-content-center align-items-center">

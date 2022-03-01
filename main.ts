@@ -40,7 +40,12 @@ app.use(passport.session())
 
 app.use("/api", router);
 
-app.use("/", (req:any, res:any) => res.append("Content-Type", "text/html").send(index));
+app.get("/logout", async (req: any, res: any) => {
+    await req.logOut()
+    res.redirect("/")
+});
+
+app.use("/", async(req:any, res:any) => res.append("Content-Type", "text/html").send(await index(req)));
 
 app.listen(PORT, () => console.log(`Servidor iniciado en el puerto: ${PORT}`));
 start();

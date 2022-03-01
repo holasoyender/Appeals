@@ -13,38 +13,32 @@ import unknownError from "./views/unknownError";
 import success from "./views/success";
 import {GuildBan} from "discord.js";
 import badDate from "./views/badDate";
+import config from "../config";
 
 router.get("/discord", passport.authenticate("discord"));
 
-router.get("/discord/redirect", passport.authenticate("discord"), async (req, res) => {
-    let user: any = await req.user;
-    let isBanned = await checkBans(user.ID)
-    if (!isBanned) return res.redirect(req.baseUrl + '/error');
-    let blockedData = await BlockedUser.find({ID: user.ID})
-    if (blockedData[0]) return res.redirect(req.baseUrl + '/blocked');
+router.get("/discord/redirect", async (req, res, next) => {
 
-    let rawBan = await getBanByUserID(user.ID);
-    if (rawBan == false) return res.redirect(req.baseUrl + '/error');
-    let ban: GuildBan = rawBan;
-    let time;
+    try {
+        passport.authenticate("discord", (err, user) => {
+            if (err) return res.append("Content-Type", "text/html").send(unknownError)
+            if (!user) return res.append("Content-Type", "text/html").send(unknownError)
 
-    if (ban.guild.me?.permissions.has("VIEW_AUDIT_LOG")) {
-        let allBans = await ban.guild.fetchAuditLogs({type: "MEMBER_BAN_ADD", limit: 100})
-        // @ts-ignore
-        let bans = allBans.entries.filter(entry => entry !== null && entry.target !== null && entry.target.id === user.ID)
-        if (!bans || !bans.first()) return res.redirect(req.baseUrl + '/form');
-        time = bans.first()?.createdAt;
+            req.login(user, async (e) => {
+                if (e) return res.append("Content-Type", "text/html").send(unknownError)
+
+                let isBanned = await checkBans(user.ID)
+                if (!isBanned) return res.redirect(req.baseUrl + '/error');
+                let blockedData = await BlockedUser.find({ ID: user.ID })
+                if (blockedData[0]) return res.redirect(req.baseUrl + '/blocked');
+
+                return res.redirect(req.baseUrl + '/form');
+            })
+        })(req, res, next)
+    } catch (e) {
+        console.log(e)
+        return res.append("Content-Type", "text/html").send(unknownError)
     }
-    else
-        return res.redirect(req.baseUrl + '/form');
-
-    if(!time) return res.redirect(req.baseUrl + '/form');
-    let newTime = new Date(time).getTime() + (30 * 24 * 60 * 60 * 1000); //Milisegundos del ban + 30 dias
-    let now30 = new Date().getTime();// Milisegundos actuales
-
-    if (newTime < now30) return res.redirect(req.baseUrl + '/form');
-    else return res.redirect(req.baseUrl + '/badDate');
-
 })
 
 router.get("/error", async (req, res) => {
@@ -90,7 +84,7 @@ router.get("/form", async (req, res) => {
         return res.append("Content-Type", "text/html").send(getFormHTML(req.user));
 
     if(!time) return res.append("Content-Type", "text/html").send(getFormHTML(req.user));
-    let newTime = new Date(time).getTime() + (30 * 24 * 60 * 60 * 1000); //Milisegundos del ban + 30 dias
+    let newTime = new Date(time).getTime() + (config.wait_days * 24 * 60 * 60 * 1000); //Milisegundos del ban + X dias
     let now30 = new Date().getTime();// Milisegundos actuales
 
     if (newTime < now30) return res.append("Content-Type", "text/html").send(getFormHTML(req.user));
@@ -144,14 +138,14 @@ router.get("/form/get", async (req, res) => {
     })
 
     newAppeal.save()
-        .then(async doc => {
+        .then(async (doc:any) => {
             let appeal = await sendAppealEmbed(user, doc);
             if (!appeal) {
                 console.log("Error: Ha ocurrido un error intentado mandar el embed de apelación al canal\nPor favor, comprueba la configuración")
                 return res.append("Content-Type", "text/html").send(unknownError)
             }
         })
-        .catch(e => { console.log(e); return res.append("Content-Type", "text/html").send(unknownError)})
+        .catch((e:any) => { console.log(e); return res.append("Content-Type", "text/html").send(unknownError)})
 
     return res.append("Content-Type", "text/html").send(success)
 })

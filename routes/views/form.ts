@@ -1,6 +1,12 @@
+import config from "../../config";
+
 export function getFormHTML(user:any) {
 
-    let avatar = `https://cdn.discordapp.com/avatars/${user.ID}/${user.Avatar}.webp`
+    let avatar;
+    if (user.Avatar !== "https://cdn.discordapp.com/embed/avatars/0.png")
+        avatar = `https://cdn.discordapp.com/avatars/${user.ID}/${user.Avatar}.webp`
+    else
+        avatar = "https://cdn.discordapp.com/embed/avatars/0.png"
 
     return `
 <!DOCTYPE html>
@@ -8,7 +14,7 @@ export function getFormHTML(user:any) {
     <head>
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-
+        <link data-n-head="ssr" rel="icon" type="image/png" sizes="512x512" href="${config.img.main_icon}">
         <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" 
         integrity="sha384-JcKb8q3iqJ61gNV9KGb8thSsNjpSL0n8PARn9HuZOnIxN0hoP+VmmDGMN5t9UJ0Z" crossorigin="anonymous">
         <link href="https://fonts.googleapis.com/css2?family=Fira+Sans&display=swap" rel="stylesheet">
@@ -23,7 +29,7 @@ export function getFormHTML(user:any) {
         <div class="container mb-3">
             <div class="d-flex">
                 <img id="avatar" class="rounded-circle" width="64" height="64" alt="Your avatar" src= "${avatar}">
-                <h2 id="username" class="ml-3 mb-0 align-self-center">${user.Tag}</h2>
+                <h2 id="username" class="ml-3 mb-0 align-self-center">${user.Tag.replace(/"/g, '&quot;')}</h2>
             </div>
 
             <form class="mt-3" name="appeal" action="form/get">
