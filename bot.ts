@@ -434,7 +434,7 @@ async function voteYes(AppealID: any, interaction: ButtonInteraction) {
             let Embed = new MessageEmbed()
                 .setColor("#57F287")
                 .setAuthor({ name: `Voto a favor de ${interaction.user.tag}`, iconURL: `${interaction.user.avatarURL()}`})
-                .setDescription(`Apelación de: <@!${_Appeal.UserID}> (${_Appeal.UserID}) con id: \`${_Appeal.AppealID}\``)
+                .setDescription(`Apelación de: <@!${_Appeal.UserID}> (${_Appeal.UserID}) con id: [${_Appeal.AppealID}](https://discord.com/channels/${interaction.guild?.id}/${interaction.channel?.id}/${_Appeal.MessageID})`)
             //@ts-ignore
             return interaction.guild?.channels.cache.get(process.env.ARGUMENT_CHANNEL_ID).send({embeds: [Embed]}).catch(() => {
             })
@@ -453,7 +453,7 @@ async function voteYes(AppealID: any, interaction: ButtonInteraction) {
             let Embed = new MessageEmbed()
                 .setColor("#57F287")
                 .setAuthor({ name: `Voto a favor de ${interaction.user.tag}`, iconURL: `${interaction.user.avatarURL()}`})
-                .setDescription(`Apelación de: <@!${_Appeal.UserID}> (${_Appeal.UserID}) con id: \`${_Appeal.AppealID}\``)
+                .setDescription(`Apelación de: <@!${_Appeal.UserID}> (${_Appeal.UserID}) con id: [${_Appeal.AppealID}](https://discord.com/channels/${interaction.guild?.id}/${interaction.channel?.id}/${_Appeal.MessageID})`)
 
             if (reason == "no" || reason == "time") //@ts-ignore
                 return interaction.guild?.channels.cache.get(process.env.ARGUMENT_CHANNEL_ID).send({embeds: [Embed]})
@@ -511,7 +511,7 @@ async function voteNo(AppealID: any, interaction: ButtonInteraction) {
             let Embed = new MessageEmbed()
                 .setColor("#ED4245")
                 .setAuthor({ name: `Voto en contra de ${interaction.user.tag}`, iconURL: `${interaction.user.avatarURL()}`})
-                .setDescription(`Apelación de: <@!${_Appeal.UserID}> (${_Appeal.UserID}) con id: \`${_Appeal.AppealID}\``)
+                .setDescription(`Apelación de: <@!${_Appeal.UserID}> (${_Appeal.UserID}) con id: [${_Appeal.AppealID}](https://discord.com/channels/${interaction.guild?.id}/${interaction.channel?.id}/${_Appeal.MessageID})`)
             //@ts-ignore
             return interaction.guild?.channels.cache.get(process.env.ARGUMENT_CHANNEL_ID).send({embeds: [Embed]}).catch(() => {
             })
@@ -529,7 +529,7 @@ async function voteNo(AppealID: any, interaction: ButtonInteraction) {
             let Embed = new MessageEmbed()
                 .setColor("#ED4245")
                 .setAuthor({ name: `Voto en contra de ${interaction.user.tag}`, iconURL:  `${interaction.user.avatarURL()}` })
-                .setDescription(`Apelación de: <@!${_Appeal.UserID}> (${_Appeal.UserID}) con id: \`${_Appeal.AppealID}\``)
+                .setDescription(`Apelación de: <@!${_Appeal.UserID}> (${_Appeal.UserID}) con id: [${_Appeal.AppealID}](https://discord.com/channels/${interaction.guild?.id}/${interaction.channel?.id}/${_Appeal.MessageID})`)
 
             if (reason == "no" || reason == "time") //@ts-ignore
                 return interaction.guild?.channels.cache.get(process.env.ARGUMENT_CHANNEL_ID).send({embeds: [Embed]})
