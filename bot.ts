@@ -282,8 +282,8 @@ export async function checkBans(userId: any) {
     let guild = client.guilds.cache.get(process.env.GUILD_ID);
     if (!guild) return false
     try {
-        let bans = await guild.bans.fetch();
-        return bans.has(userId)
+        let ban = await guild.bans.fetch({ user: userId })
+        return !!ban;
     } catch (e) {
         console.log("No tengo permisos para ver los bans del servidor!")
         return false
@@ -295,8 +295,8 @@ export async function getBanByUserID(userId: any) {
     let guild = client.guilds.cache.get(process.env.GUILD_ID);
     if (!guild) return false
     try {
-        let bans = await guild.bans.fetch();
-        return bans.get(userId) || false
+        let ban = await guild.bans.fetch({ user: userId })
+        return ban || false
     } catch (e) {
         console.log("No tengo permisos para ver los bans del servidor!")
         return false
