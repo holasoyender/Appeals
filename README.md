@@ -2,19 +2,21 @@
 
 Sistema de apelación de baneos permanentes del servidor de **LA CABRA** usando **MongoDB**
 Para cualquier pregunta/sugerencia siempre podéis abrir una **issue**
-Demo: http://cabrapeals.cluster-0.kirobot.cc/
+Actualmente en producción en: https://appeals-lacabra.herokuapp.com/
 
 ## Como usar
 
 1 - Crea una aplicación en Discord y añade el siguiente link a la sección Oauth2:
 ```http://<URL>/api/auth/discord/redirect```
 
-2 - Rellena el archivo [.env](https://github.com/holasoyender/Appeals#ejemplo-de-arcivo-env) o tu hoja de variables de **Heroku/Netlify**
+2 - Rellena el archivo [.env](https://github.com/holasoyender/Appeals#ejemplo-de-arcivo-env) o tu hoja de variables de **Heroku**
 
 3 - Añade el bot al servidor con los siguientes permisos: `Banear usuarios`, `Crear slash commands` y `Mandar mensajes`.
 URL de ejemplo: ```https://discord.com/api/oauth2/authorize?client_id=<ID-DEL-CLIENTE>&permissions=2147483652&scope=bot%20applications.commands ```
 
 4 - Crea un canal en el que el bot pueda `Mandar mensajes` y `Leer mensajes`
+
+5 - Configura el aspecto visual del sistema desde el archivo `config.ts`
 
 ## Comandos disponibles
 
