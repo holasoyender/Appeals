@@ -85,9 +85,9 @@ router.get("/form", async (req, res) => {
 
     if(!time) return res.append("Content-Type", "text/html").send(getFormHTML(req.user));
     let newTime = new Date(time).getTime() + (config.wait_days * 24 * 60 * 60 * 1000); //Milisegundos del ban + X dias
-    let now30 = new Date().getTime();// Milisegundos actuales
+    let now = new Date().getTime();// Milisegundos actuales
 
-    if (newTime > now30) return res.append("Content-Type", "text/html").send(getFormHTML(req.user));
+    if (newTime <= now) return res.append("Content-Type", "text/html").send(getFormHTML(req.user));
     else return res.redirect(req.baseUrl + '/badDate');
 
 })

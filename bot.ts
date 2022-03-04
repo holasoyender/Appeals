@@ -285,7 +285,8 @@ export async function checkBans(userId: any) {
         let ban = await guild.bans.fetch({ user: userId })
         return !!ban;
     } catch (e) {
-        console.log("No tengo permisos para ver los bans del servidor!")
+        //console.log("No tengo permisos para ver los bans del servidor!")
+        //console.log(e)
         return false
     }
 }
@@ -298,7 +299,7 @@ export async function getBanByUserID(userId: any) {
         let ban = await guild.bans.fetch({ user: userId })
         return ban || false
     } catch (e) {
-        console.log("No tengo permisos para ver los bans del servidor!")
+        //console.log("No tengo permisos para ver los bans del servidor!")
         return false
     }
 }
